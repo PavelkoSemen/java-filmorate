@@ -1,6 +1,6 @@
 package ru.yandex.practicum.filmorate.error;
 
-public class SaveFilmException extends RuntimeException{
+public class SaveFilmException extends RuntimeException {
     public SaveFilmException() {
     }
 

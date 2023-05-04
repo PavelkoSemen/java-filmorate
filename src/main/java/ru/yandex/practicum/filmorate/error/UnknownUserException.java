@@ -1,6 +1,6 @@
 package ru.yandex.practicum.filmorate.error;
 
-public class UnknownUserException extends RuntimeException{
+public class UnknownUserException extends RuntimeException {
     public UnknownUserException() {
     }
 

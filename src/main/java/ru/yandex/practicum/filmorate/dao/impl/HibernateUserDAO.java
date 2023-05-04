@@ -82,7 +82,7 @@ public class HibernateUserDAO implements DAO<User> {
     @Override
     public void delete(User user) {
         log.info("Удаление пользователя: {}", user);
-        try(var entityManager = EntityManagerPool.getEntityManager()) {
+        try (var entityManager = EntityManagerPool.getEntityManager()) {
             entityManager.getTransaction().begin();
             entityManager.remove(user);
             entityManager.getTransaction().commit();

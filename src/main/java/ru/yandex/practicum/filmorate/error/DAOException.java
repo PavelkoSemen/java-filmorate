@@ -1,6 +1,6 @@
 package ru.yandex.practicum.filmorate.error;
 
-public class DAOException extends RuntimeException{
+public class DAOException extends RuntimeException {
     public DAOException() {
     }
 

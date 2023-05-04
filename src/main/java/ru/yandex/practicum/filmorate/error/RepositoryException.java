@@ -1,6 +1,6 @@
 package ru.yandex.practicum.filmorate.error;
 
-public class RepositoryException extends RuntimeException{
+public class RepositoryException extends RuntimeException {
     public RepositoryException() {
     }
 

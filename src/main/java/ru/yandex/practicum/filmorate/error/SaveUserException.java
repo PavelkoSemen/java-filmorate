@@ -1,6 +1,6 @@
 package ru.yandex.practicum.filmorate.error;
 
-public class SaveUserException extends RuntimeException{
+public class SaveUserException extends RuntimeException {
     public SaveUserException() {
     }
 
