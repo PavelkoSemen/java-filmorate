@@ -1,12 +1,13 @@
 package ru.yandex.practicum.filmorate.model;
 
-import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Positive;
-import jakarta.validation.constraints.Size;
+
 import lombok.Data;
 import ru.yandex.practicum.filmorate.utils.ValidFilmDate;
 
+import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.Size;
 import java.time.LocalDate;
 
 @Entity

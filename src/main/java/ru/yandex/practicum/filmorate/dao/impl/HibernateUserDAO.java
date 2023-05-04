@@ -18,8 +18,11 @@ public class HibernateUserDAO implements DAO<User> {
     @Override
     public List<User> getAll() {
         log.info("Получение списка всех пользователей");
-        try (var entityManager = EntityManagerPool.getEntityManager();) {
-            return entityManager.createQuery("FROM User", User.class).getResultList();
+        try {
+            var entityManager = EntityManagerPool.getEntityManager();
+            List<User> users = entityManager.createQuery("FROM User", User.class).getResultList();
+            entityManager.close();
+            return users;
         } catch (IllegalStateException e) {
             log.error("Ошибка получения пользователей");
             throw new DAOException("Ошибка получения пользователей", e);
@@ -30,8 +33,10 @@ public class HibernateUserDAO implements DAO<User> {
     @Override
     public Optional<User> get(long id) {
         log.info("Получение пользователя с id: {}", id);
-        try (var entityManager = EntityManagerPool.getEntityManager()) {
+        try {
+            var entityManager = EntityManagerPool.getEntityManager();
             User user = entityManager.find(User.class, id);
+            entityManager.close();
             return Optional.of(user);
         } catch (IllegalStateException e) {
             log.error("Ошибка получения пользователя с id: {}", id);
@@ -42,10 +47,12 @@ public class HibernateUserDAO implements DAO<User> {
     @Override
     public Optional<User> save(User user) {
         log.info("Сохранение пользователя: {}", user);
-        try (var entityManager = EntityManagerPool.getEntityManager()) {
+        try {
+            var entityManager = EntityManagerPool.getEntityManager();
             entityManager.getTransaction().begin();
             entityManager.persist(user);
             entityManager.getTransaction().commit();
+            entityManager.close();
             if (user.getId() == 0)
                 return Optional.empty();
             log.info("Пользователь {} сохранен", user.getId());
@@ -59,7 +66,8 @@ public class HibernateUserDAO implements DAO<User> {
     @Override
     public Optional<User> update(User user) {
         log.info("Обновление пользователя: {}", user);
-        try (var entityManager = EntityManagerPool.getEntityManager()) {
+        try {
+            var entityManager = EntityManagerPool.getEntityManager();
             Optional<User> optionalFilm = Optional.empty();
             User modifiedUser = entityManager.find(User.class, user.getId());
             if (modifiedUser != null) {
@@ -70,6 +78,7 @@ public class HibernateUserDAO implements DAO<User> {
                 modifiedUser.setEmail(user.getEmail());
                 modifiedUser.setBirthday(user.getBirthday());
                 entityManager.getTransaction().commit();
+                entityManager.close();
                 log.info("Пользователь {} обновлен", user);
             }
             return optionalFilm;
@@ -82,10 +91,12 @@ public class HibernateUserDAO implements DAO<User> {
     @Override
     public void delete(User user) {
         log.info("Удаление пользователя: {}", user);
-        try (var entityManager = EntityManagerPool.getEntityManager()) {
+        try {
+            var entityManager = EntityManagerPool.getEntityManager();
             entityManager.getTransaction().begin();
             entityManager.remove(user);
             entityManager.getTransaction().commit();
+            entityManager.close();
             log.info("Пользователь {} удален", user);
         } catch (IllegalStateException e) {
             log.error("Ошибка удаления пользователя: {}", user);

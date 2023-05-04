@@ -1,8 +1,8 @@
 package ru.yandex.practicum.filmorate.dao;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.Persistence;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
 
 // Так как сложно было настроить это в контексте спринга, сделал синглетон.
 public class EntityManagerPool {
