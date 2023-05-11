@@ -35,16 +35,16 @@ class FilmServiceTest {
 
     @BeforeEach
     void setUp() {
-        firstFilm = new Film(1
-                , "film1"
-                , "film1"
-                , LocalDate.of(2005, 3, 25)
-                , 100);
-        secondFilm = new Film(2
-                , "film2"
-                , "film2"
-                , LocalDate.of(2015, 3, 25)
-                , 100);
+        firstFilm = new Film(1,
+                "film1",
+                "film1",
+                LocalDate.of(2005, 3, 25),
+                100);
+        secondFilm = new Film(2,
+                "film2",
+                "film2",
+                LocalDate.of(2015, 3, 25),
+                100);
     }
 
 
@@ -65,8 +65,8 @@ class FilmServiceTest {
     public void shouldThrowAnExceptionWhenSavingAMovie() {
         given(filmDAO.save(firstFilm)).willReturn(Optional.empty());
 
-        assertThrows(SaveFilmException.class
-                , () -> filmService.createFilm(firstFilm));
+        assertThrows(SaveFilmException.class,
+                () -> filmService.createFilm(firstFilm));
 
         verify(filmDAO, times(1)).save(firstFilm);
     }
@@ -89,8 +89,8 @@ class FilmServiceTest {
     public void shouldThrowAnExceptionWhenUpdatingAMovie() {
         given(filmDAO.update(firstFilm)).willReturn(Optional.empty());
 
-        assertThrows(UnknownFilmException.class
-                , () -> filmService.updateFilm(firstFilm));
+        assertThrows(UnknownFilmException.class,
+                () -> filmService.updateFilm(firstFilm));
 
         verify(filmDAO, times(1)).update(firstFilm);
     }

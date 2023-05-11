@@ -35,10 +35,16 @@ class UserServiceTest {
 
     @BeforeEach
     void setUp() {
-        firstUser = new User(1, "se.pa.94@mail.ru", "login", "name"
-                , LocalDate.of(1994, 3, 25));
-        secondUser = new User(2, "se.pa.95@mail.ru", "login", null
-                , LocalDate.of(1995, 3, 25));
+        firstUser = new User(1,
+                "se.pa.94@mail.ru",
+                "login",
+                "name",
+                LocalDate.of(1994, 3, 25));
+        secondUser = new User(2,
+                "se.pa.95@mail.ru",
+                "login",
+                null,
+                LocalDate.of(1995, 3, 25));
     }
 
 
@@ -74,8 +80,8 @@ class UserServiceTest {
     public void shouldThrowAnExceptionWhenSavingAMovie() {
         given(userDAO.save(firstUser)).willReturn(Optional.empty());
 
-        assertThrows(SaveUserException.class
-                , () -> userService.createUser(firstUser));
+        assertThrows(SaveUserException.class,
+                () -> userService.createUser(firstUser));
 
         verify(userDAO, times(1)).save(firstUser);
     }
@@ -98,8 +104,8 @@ class UserServiceTest {
     public void shouldThrowAnExceptionWhenUpdatingAMovie() {
         given(userDAO.update(firstUser)).willReturn(Optional.empty());
 
-        assertThrows(UnknownUserException.class
-                , () -> userService.updateUser(firstUser));
+        assertThrows(UnknownUserException.class,
+                () -> userService.updateUser(firstUser));
 
         verify(userDAO, times(1)).update(firstUser);
     }
