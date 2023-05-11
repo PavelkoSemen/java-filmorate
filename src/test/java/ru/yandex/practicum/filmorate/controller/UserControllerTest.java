@@ -46,10 +46,16 @@ class UserControllerTest {
 
     @BeforeEach
     void setUp() {
-        firstUser = new User(1, "se.pa.94@mail.ru", "login", "name"
-                , LocalDate.of(1994, 3, 25));
-        secondUser = new User(2, "se.pa.95@mail.ru", "login", "name"
-                , LocalDate.of(1995, 3, 25));
+        firstUser = new User(1,
+                "se.pa.94@mail.ru",
+                "login",
+                "name",
+                LocalDate.of(1994, 3, 25));
+        secondUser = new User(2,
+                "se.pa.95@mail.ru",
+                "login",
+                "name",
+                LocalDate.of(1995, 3, 25));
     }
 
     @DisplayName("Должен вернуть код 4xx, и сообщение об ошибке")
@@ -93,6 +99,7 @@ class UserControllerTest {
 
         verify(service, times(1)).updateUser(firstUser);
     }
+
     @Test
     @DisplayName("Должен вернуть статус 404, при попытки обновить не существующего пользователя")
     public void shouldReturnNotFoundUpdateUser() throws Exception {
@@ -132,18 +139,18 @@ class UserControllerTest {
 
         return Stream.of(
                 arguments(
-                        new User(0, "se.pa.94mail.ru", "login", "name"
-                                , LocalDate.of(1900, 3, 25))
+                        new User(0, "se.pa.94mail.ru", "login", "name",
+                                LocalDate.of(1900, 3, 25))
                         , "Does not match the email"),
 
                 arguments(
-                        new User(0, "se.pa.94@mail.ru", null, "name"
-                                , LocalDate.of(1900, 3, 25))
+                        new User(0, "se.pa.94@mail.ru", null, "name",
+                                LocalDate.of(1900, 3, 25))
                         , "Login cannot be empty"),
 
                 arguments(
-                        new User(0, "se.pa.94@mail.ru", "login", "name"
-                                , LocalDate.of(2900, 3, 25))
+                        new User(0, "se.pa.94@mail.ru", "login", "name",
+                                LocalDate.of(2900, 3, 25))
                         , "Birthday is longer than the current date")
         );
     }

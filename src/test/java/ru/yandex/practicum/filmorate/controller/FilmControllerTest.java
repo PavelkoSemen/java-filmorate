@@ -46,16 +46,16 @@ class FilmControllerTest {
 
     @BeforeEach
     void setUp() {
-        firstFilm = new Film(1
-                , "nisi eiusmod"
-                , "adipisicing"
-                , LocalDate.of(1967, 3, 25)
-                , 100);
-        secondFilm = new Film(2
-                , "nisi eiusmod"
-                , "adipisicing"
-                , LocalDate.of(1967, 3, 25)
-                , 100);
+        firstFilm = new Film(1,
+                "nisi eiusmod",
+                "adipisicing",
+                LocalDate.of(1967, 3, 25),
+                100);
+        secondFilm = new Film(2,
+                "nisi eiusmod",
+                "adipisicing",
+                LocalDate.of(1967, 3, 25),
+                100);
     }
 
     @DisplayName("Должен вернуть код 4xx, и сообщение об ошибке")
@@ -138,23 +138,23 @@ class FilmControllerTest {
 
         return Stream.of(
                 arguments(
-                        new Film(0, null, "Description"
-                                , LocalDate.of(1900, 3, 25), 200)
+                        new Film(0, null, "Description",
+                                LocalDate.of(1900, 3, 25), 200)
                         , "Name cannot be empty"),
 
                 arguments(
-                        new Film(0, "Name", "t".repeat(250)
-                                , LocalDate.of(1900, 3, 25), 200)
+                        new Film(0, "Name", "t".repeat(250),
+                                LocalDate.of(1900, 3, 25), 200)
                         , "Description length is more than 200 characters"),
 
                 arguments(
-                        new Film(0, "Name", "Description"
-                                , LocalDate.of(1890, 3, 25), 200)
+                        new Film(0, "Name", "Description",
+                                LocalDate.of(1890, 3, 25), 200)
                         , "Invalid film realise date"),
 
                 arguments(
-                        new Film(0, "Name", "Description"
-                                , LocalDate.of(1980, 3, 25), -200)
+                        new Film(0, "Name", "Description",
+                                LocalDate.of(1980, 3, 25), -200)
                         , "Duration of the film is negative")
         );
     }
