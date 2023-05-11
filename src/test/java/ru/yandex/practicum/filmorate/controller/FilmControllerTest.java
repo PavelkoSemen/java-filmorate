@@ -139,23 +139,23 @@ class FilmControllerTest {
         return Stream.of(
                 arguments(
                         new Film(0, null, "Description",
-                                LocalDate.of(1900, 3, 25), 200)
-                        , "Name cannot be empty"),
+                                LocalDate.of(1900, 3, 25), 200),
+                        "Name cannot be empty"),
 
                 arguments(
                         new Film(0, "Name", "t".repeat(250),
-                                LocalDate.of(1900, 3, 25), 200)
-                        , "Description length is more than 200 characters"),
+                                LocalDate.of(1900, 3, 25), 200),
+                        "Description length is more than 200 characters"),
 
                 arguments(
                         new Film(0, "Name", "Description",
-                                LocalDate.of(1890, 3, 25), 200)
-                        , "Invalid film realise date"),
+                                LocalDate.of(1890, 3, 25), 200),
+                        "Invalid film realise date"),
 
                 arguments(
                         new Film(0, "Name", "Description",
-                                LocalDate.of(1980, 3, 25), -200)
-                        , "Duration of the film is negative")
+                                LocalDate.of(1980, 3, 25), -200),
+                        "Duration of the film is negative")
         );
     }
 }

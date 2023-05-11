@@ -140,18 +140,18 @@ class UserControllerTest {
         return Stream.of(
                 arguments(
                         new User(0, "se.pa.94mail.ru", "login", "name",
-                                LocalDate.of(1900, 3, 25))
-                        , "Does not match the email"),
+                                LocalDate.of(1900, 3, 25)),
+                        "Does not match the email"),
 
                 arguments(
                         new User(0, "se.pa.94@mail.ru", null, "name",
-                                LocalDate.of(1900, 3, 25))
-                        , "Login cannot be empty"),
+                                LocalDate.of(1900, 3, 25)),
+                        "Login cannot be empty"),
 
                 arguments(
                         new User(0, "se.pa.94@mail.ru", "login", "name",
-                                LocalDate.of(2900, 3, 25))
-                        , "Birthday is longer than the current date")
+                                LocalDate.of(2900, 3, 25)),
+                        "Birthday is longer than the current date")
         );
     }
 }
