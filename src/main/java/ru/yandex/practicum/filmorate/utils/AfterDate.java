@@ -12,15 +12,19 @@ import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 @Documented
-@Constraint(validatedBy = ValidFilmDateValidator.class)
+@Constraint(validatedBy = AfterDateValidator.class)
 @Target({FIELD, ANNOTATION_TYPE})
 @Retention(RUNTIME)
-public @interface ValidFilmDate {
+public @interface AfterDate {
 
-    String message() default "Invalid film realise date";
+    String message() default "Invalid date";
 
     Class<?>[] groups() default {};
 
     Class<? extends Payload>[] payload() default {};
+
+    String beforeDate() default "1800-01-01";
+
+    String dateFormat() default "yyyy-MM-dd";
 
 }

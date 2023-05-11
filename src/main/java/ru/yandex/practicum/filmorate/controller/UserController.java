@@ -2,17 +2,13 @@ package ru.yandex.practicum.filmorate.controller;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.support.DefaultMessageSourceResolvable;
-import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.userservice.UserService;
 
 import javax.validation.Valid;
-import javax.validation.ValidationException;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 public class UserController {
@@ -34,24 +30,12 @@ public class UserController {
     }
 
     @PostMapping(path = "/users")
-    public User addUser(@RequestBody @Valid User user, Errors errors) {
-        if (errors.hasErrors()) {
-            throw new ValidationException(this.getErrorsMessage(errors));
-        }
+    public User addUser(@RequestBody @Valid User user) {
         return userService.createUser(user);
     }
 
     @PutMapping(path = "/users")
-    public User updateUser(@RequestBody @Valid User user, Errors errors) {
-        if (errors.hasErrors()) {
-            throw new ValidationException(this.getErrorsMessage(errors));
-        }
+    public User updateUser(@RequestBody @Valid User user) {
         return userService.updateUser(user);
-    }
-
-    private String getErrorsMessage(Errors errors) {
-        return errors.getAllErrors().stream()
-                .map(DefaultMessageSourceResolvable::getDefaultMessage)
-                .collect(Collectors.joining("\n"));
     }
 }
