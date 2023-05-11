@@ -113,11 +113,11 @@ class UserServiceTest {
     @DisplayName("Должен вернуть список пользователей")
     @Test
     public void shouldReturnAListOfMovies() {
-        List<User> UserList = List.of(firstUser, secondUser);
+        List<User> userList = List.of(firstUser, secondUser);
 
-        given(userDAO.getAll()).willReturn(UserList);
+        given(userDAO.getAll()).willReturn(userList);
 
-        assertEquals(UserList, userService.getAllUsers());
+        assertEquals(userList, userService.getAllUsers());
 
         verify(userDAO, times(1)).getAll();
     }
