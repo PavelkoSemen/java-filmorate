@@ -13,6 +13,7 @@ import ru.yandex.practicum.filmorate.error.UnknownUserException;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -39,12 +40,14 @@ class UserServiceTest {
                 "se.pa.94@mail.ru",
                 "login",
                 "name",
-                LocalDate.of(1994, 3, 25));
+                LocalDate.of(1994, 3, 25),
+                Collections.emptySet());
         secondUser = new User(2,
                 "se.pa.95@mail.ru",
                 "login",
                 null,
-                LocalDate.of(1995, 3, 25));
+                LocalDate.of(1995, 3, 25),
+                Collections.emptySet());
     }
 
 

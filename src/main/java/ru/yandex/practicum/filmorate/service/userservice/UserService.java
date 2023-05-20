@@ -14,5 +14,10 @@ public interface UserService {
 
     void deleteUser(long id);
 
+    void addFriend(long userId, long friendId);
+    void removeFriend(long userId, long friendId);
+
+    List<User> getFriends(long id);
+
     List<User> getAllUsers();
 }

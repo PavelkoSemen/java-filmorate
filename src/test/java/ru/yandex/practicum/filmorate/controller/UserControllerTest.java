@@ -18,6 +18,7 @@ import ru.yandex.practicum.filmorate.service.userservice.UserService;
 
 import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -50,12 +51,14 @@ class UserControllerTest {
                 "se.pa.94@mail.ru",
                 "login",
                 "name",
-                LocalDate.of(1994, 3, 25));
+                LocalDate.of(1994, 3, 25),
+                Collections.emptySet());
         secondUser = new User(2,
                 "se.pa.95@mail.ru",
                 "login",
                 "name",
-                LocalDate.of(1995, 3, 25));
+                LocalDate.of(1995, 3, 25),
+                Collections.emptySet());
     }
 
     @DisplayName("Должен вернуть код 4xx, и сообщение об ошибке")
@@ -140,17 +143,20 @@ class UserControllerTest {
         return Stream.of(
                 arguments(
                         new User(0, "se.pa.94mail.ru", "login", "name",
-                                LocalDate.of(1900, 3, 25)),
+                                LocalDate.of(1900, 3, 25),
+                                Collections.emptySet()),
                         "Does not match the email"),
 
                 arguments(
                         new User(0, "se.pa.94@mail.ru", null, "name",
-                                LocalDate.of(1900, 3, 25)),
+                                LocalDate.of(1900, 3, 25),
+                                Collections.emptySet()),
                         "Login cannot be empty"),
 
                 arguments(
                         new User(0, "se.pa.94@mail.ru", "login", "name",
-                                LocalDate.of(2900, 3, 25)),
+                                LocalDate.of(2900, 3, 25),
+                                Collections.emptySet()),
                         "Birthday is longer than the current date")
         );
     }

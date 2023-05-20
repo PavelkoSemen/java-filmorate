@@ -3,16 +3,18 @@ package ru.yandex.practicum.filmorate.dao.impl;
 import lombok.extern.slf4j.Slf4j;
 import ru.yandex.practicum.filmorate.dao.DAO;
 import ru.yandex.practicum.filmorate.dao.EntityManagerPool;
+import ru.yandex.practicum.filmorate.dao.UserDAO;
 import ru.yandex.practicum.filmorate.error.DAOException;
 import ru.yandex.practicum.filmorate.model.User;
 import org.springframework.stereotype.Repository;
 
+import javax.persistence.Query;
 import java.util.List;
 import java.util.Optional;
 
 @Slf4j
 @Repository
-public class HibernateUserDAO implements DAO<User> {
+public class HibernateUserDAO implements DAO<User>, UserDAO {
 
 
     @Override
@@ -35,7 +37,10 @@ public class HibernateUserDAO implements DAO<User> {
         log.info("Получение пользователя с id: {}", id);
         try {
             var entityManager = EntityManagerPool.getEntityManager();
-            User user = entityManager.find(User.class, id);
+//            User user = entityManager.find(User.class, id);
+            Query q = entityManager.createQuery("SELECT u FROM User u LEFT JOIN FETCH u.friendsList WHERE u.id = :id");
+            q.setParameter("id", id);
+            User user = (User) q.getSingleResult();
             entityManager.close();
             return Optional.of(user);
         } catch (IllegalStateException e) {
@@ -69,14 +74,15 @@ public class HibernateUserDAO implements DAO<User> {
         try {
             var entityManager = EntityManagerPool.getEntityManager();
             Optional<User> optionalFilm = Optional.empty();
+            entityManager.getTransaction().begin();
             User modifiedUser = entityManager.find(User.class, user.getId());
             if (modifiedUser != null) {
                 optionalFilm = Optional.of(modifiedUser);
-                entityManager.getTransaction().begin();
                 modifiedUser.setName(user.getName());
                 modifiedUser.setLogin(user.getLogin());
                 modifiedUser.setEmail(user.getEmail());
                 modifiedUser.setBirthday(user.getBirthday());
+                modifiedUser.setFriendsList(user.getFriendsList());
                 entityManager.getTransaction().commit();
                 entityManager.close();
                 log.info("Пользователь {} обновлен", user);
@@ -86,6 +92,43 @@ public class HibernateUserDAO implements DAO<User> {
             log.error("Ошибка обновления пользователя: {}", user);
             throw new DAOException("Ошибка обновления пользователя: " + user, e);
         }
+    }
+
+    public void insertFriend(long userId, long friendId) {
+        var entityManager = EntityManagerPool.getEntityManager();
+
+        entityManager.getTransaction().begin();
+
+        User user = entityManager.find(User.class, userId);
+        User friend = entityManager.find(User.class, friendId);
+        user.addFriend(friend);
+        friend.addFriend(user);
+
+        entityManager.getTransaction().commit();
+        entityManager.close();
+    }
+
+    public void deleteFriend(long userId, long friendId) {
+        var entityManager = EntityManagerPool.getEntityManager();
+
+        entityManager.getTransaction().begin();
+        User user = entityManager.find(User.class, userId);
+        User friend = entityManager.find(User.class, friendId);
+
+        user.removeFriend(friend);
+        friend.removeFriend(user);
+        entityManager.getTransaction().commit();
+        entityManager.close();
+    }
+
+    @Override
+    public List<User> getFriendsList(long id) {
+        var entityManager = EntityManagerPool.getEntityManager();
+        entityManager.getTransaction().begin();
+        return entityManager
+                .createQuery("SELECT u FROM User u LEFT JOIN FETCH u.friendsList l WHERE l.id = :id",
+                        User.class)
+                .setParameter("id", id).getResultList();
     }
 
     @Override
