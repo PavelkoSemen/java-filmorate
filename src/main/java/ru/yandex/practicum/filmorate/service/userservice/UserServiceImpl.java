@@ -1,8 +1,7 @@
 package ru.yandex.practicum.filmorate.service.userservice;
 
 import lombok.extern.slf4j.Slf4j;
-import ru.yandex.practicum.filmorate.dao.DAO;
-import ru.yandex.practicum.filmorate.dao.UserDAO;
+import ru.yandex.practicum.filmorate.dao.UserRepository;
 import ru.yandex.practicum.filmorate.error.DAOException;
 import ru.yandex.practicum.filmorate.error.RepositoryException;
 import ru.yandex.practicum.filmorate.error.SaveUserException;
@@ -11,27 +10,26 @@ import ru.yandex.practicum.filmorate.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
 import java.util.List;
 
 @Slf4j
 @Service
 public class UserServiceImpl implements UserService {
-    private final UserDAO userDAO;
+    private final UserRepository userRepository;
 
     @Autowired
-    public UserServiceImpl(UserDAO userDAO) {
-        this.userDAO = userDAO;
+    public UserServiceImpl(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
     @Override
     public User createUser(User user) {
         log.info("Сохранение пользователя: {}", user);
         try {
-            if (user.getName() == null) {
+            if (user.getName() == null || user.getName().isBlank()) {
                 user.setName(user.getLogin());
             }
-            return userDAO.save(user).orElseThrow(SaveUserException::new);
+            return userRepository.save(user).orElseThrow(SaveUserException::new);
         } catch (DAOException e) {
             log.error("Ошибка сохранения пользователя: {}", user);
             throw new RepositoryException(e);
@@ -42,7 +40,7 @@ public class UserServiceImpl implements UserService {
     public User getUser(long id) {
         log.info("Получение пользователя по id: {}", id);
         try {
-            return userDAO.get(id).orElseThrow(() -> new UnknownUserException("Пользователь не найден: " + id));
+            return userRepository.get(id).orElseThrow(() -> new UnknownUserException("Пользователь не найден: " + id));
         } catch (DAOException e) {
             log.error("Ошибка получения пользователя: {}", id);
             throw new RepositoryException(e);
@@ -53,7 +51,7 @@ public class UserServiceImpl implements UserService {
     public User updateUser(User user) {
         log.info("Обновление пользователя {}", user);
         try {
-            return userDAO.update(user).orElseThrow(() -> new UnknownUserException("Пользователь не найден: " + user));
+            return userRepository.update(user).orElseThrow(() -> new UnknownUserException("Пользователь не найден: " + user));
         } catch (DAOException e) {
             log.error("Ошибка обновления пользователя: {}", user);
             throw new RepositoryException(e);
@@ -61,43 +59,45 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void deleteUser(long id) {
-    }
-
-    @Override
-    public void addFriend(long userId, long friendId) {
-        User user = userDAO.get(userId).orElseThrow(() ->
+    public User addFriend(long userId, long friendId) {
+        userRepository.get(userId).orElseThrow(() ->
                 new UnknownUserException("Пользователь не найден: " + userId));
-        User friend = userDAO.get(friendId).orElseThrow(() ->
+        userRepository.get(friendId).orElseThrow(() ->
                 new UnknownUserException("Пользователь не найден: " + friendId));
 
-        user.addFriend(friend);
-        friend.addFriend(user);
-//        userDAO.insertFriend(userId, friendId);
-        userDAO.update(user);
-        userDAO.update(friend);
+        return userRepository.insertFriend(userId, friendId);
     }
 
     @Override
-    public void removeFriend(long userId, long friendId) {
-        userDAO.deleteFriend(userId, friendId);
+    public User removeFriend(long userId, long friendId) {
+        userRepository.get(userId).orElseThrow(() ->
+                new UnknownUserException("Пользователь не найден: " + userId));
+        userRepository.get(friendId).orElseThrow(() ->
+                new UnknownUserException("Пользователь не найден: " + friendId));
+
+        return userRepository.deleteFriend(userId, friendId);
     }
 
     @Override
     public List<User> getFriends(long id) {
-        return userDAO.getFriendsList(id);
+        return userRepository.getFriendsList(id);
     }
 
-//    @Override
-//    public void addFriend(long userId, long friendId) {
-//        userDAO.insertFriend(userId, friendId);
-//    }
+    @Override
+    public List<User> getMutualFriends(long id, long otherId) {
+        userRepository.get(id).orElseThrow(() ->
+                new UnknownUserException("Пользователь не найден: " + id));
+        userRepository.get(otherId).orElseThrow(() ->
+                new UnknownUserException("Пользователь не найден: " + otherId));
+
+        return userRepository.getMutualFriendsList(id, otherId);
+    }
 
     @Override
     public List<User> getAllUsers() {
         log.info("Получение пользователей");
         try {
-            return userDAO.getAll();
+            return userRepository.getAll();
         } catch (DAOException e) {
             log.error("Ошибка получения списка пользователей");
             throw new RepositoryException(e);

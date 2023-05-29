@@ -1,17 +1,18 @@
 package ru.yandex.practicum.filmorate.dao.impl;
 
 import lombok.extern.slf4j.Slf4j;
-import ru.yandex.practicum.filmorate.dao.DAO;
 import ru.yandex.practicum.filmorate.dao.EntityManagerPool;
+import ru.yandex.practicum.filmorate.dao.FilmRepository;
 import ru.yandex.practicum.filmorate.error.DAOException;
 import ru.yandex.practicum.filmorate.model.Film;
 import org.springframework.stereotype.Repository;
+import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.*;
 
 @Slf4j
 @Repository
-public class HibernateFilmDAO implements DAO<Film> {
+public class HibernateFilmRepository implements FilmRepository {
 
     @Override
     public List<Film> getAll() {
@@ -34,7 +35,7 @@ public class HibernateFilmDAO implements DAO<Film> {
             var entityManager = EntityManagerPool.getEntityManager();
             Film film = entityManager.find(Film.class, id);
             entityManager.close();
-            return Optional.of(film);
+            return Optional.ofNullable(film);
         } catch (IllegalStateException e) {
             log.error("Ошибка получения фильма с id: {}", id);
             throw new DAOException("Ошибка получения фильма с id: " + id, e);
@@ -60,7 +61,6 @@ public class HibernateFilmDAO implements DAO<Film> {
         }
     }
 
-    //optionalFilm = Optional.of(entityManager.merge(user));
     @Override
     public Optional<Film> update(Film film) {
         log.info("Обновление фильма: {}", film);
@@ -84,6 +84,65 @@ public class HibernateFilmDAO implements DAO<Film> {
         } catch (IllegalStateException e) {
             log.error("Ошибка обновления фильма: {}", film);
             throw new DAOException("Ошибка обновления фильма: " + film, e);
+        }
+    }
+
+    @Override
+    public Film putLike(long filmId, long userId) {
+        log.info("Добавить фильму {} лайк, от пользователя {}", filmId, userId);
+        try {
+            var entityManager = EntityManagerPool.getEntityManager();
+            entityManager.getTransaction().begin();
+            Film film = entityManager.find(Film.class, filmId);
+            User user = entityManager.find(User.class, userId);
+            film.addUser(user);
+            entityManager.getTransaction().commit();
+            return film;
+        } catch (IllegalStateException e) {
+            log.error("Ошибка добавления лайка фильм {}, пользователь {}", filmId, userId);
+            throw new DAOException("Ошибка добавления лайка", e);
+        }
+    }
+
+    @Override
+    public Film deleteLike(long filmId, long userId) {
+        log.info("Удалить у фильма {} лайк, от пользователя {}", filmId, userId);
+        try {
+            var entityManager = EntityManagerPool.getEntityManager();
+            entityManager.getTransaction().begin();
+            Film film = entityManager.find(Film.class, filmId);
+            User user = entityManager.find(User.class, userId);
+            film.removeUser(user);
+            return film;
+        } catch (IllegalStateException e) {
+            log.error("Ошибка удаления лайка фильм {}, пользователь {}", filmId, userId);
+            throw new DAOException("Ошибка удаления лайка", e);
+        }
+    }
+
+    @Override
+    public List<Film> findTopFilms(int countFilms) {
+        log.info("Вернуть топ {} фильмов", countFilms);
+        try {
+            var entityManager = EntityManagerPool.getEntityManager();
+            entityManager.getTransaction().begin();
+            @SuppressWarnings("unchecked") List<Film> films = entityManager
+                    .createNativeQuery("SELECT f.* FROM films f " +
+                                    "LEFT JOIN (SELECT film_id " +
+                                    "                   ,COUNT(user_id) as count_likes " +
+                                    "              FROM likes " +
+                                    "              GROUP BY film_id) cf " +
+                                    "    ON cf.film_id= f.id " +
+                                    "ORDER BY count_likes desc",
+                            Film.class)
+                    .setMaxResults(countFilms)
+                    .getResultList();
+            entityManager.getTransaction().commit();
+            entityManager.close();
+            return films;
+        } catch (IllegalStateException e) {
+            log.error("Ошибка получения топа фильмов");
+            throw new DAOException("Ошибка получения топа фильмов", e);
         }
     }
 

@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
@@ -27,7 +28,7 @@ public class User {
     @PastOrPresent(message = "Birthday is longer than the current date")
     private LocalDate birthday;
 
-    @OneToMany(cascade = {
+    @ManyToMany(cascade = {
             CascadeType.PERSIST,
             CascadeType.MERGE})
     @JoinTable(name = "friends",
@@ -36,7 +37,22 @@ public class User {
     )
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
+    @JsonIgnore
     private Set<User> friendsList = new HashSet<>();
+
+    @ManyToMany(mappedBy = "users")
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    @JsonIgnore
+    private Set<Film> films = new HashSet<>();
+
+    public User(long id, String email, String login, String name, LocalDate birthday) {
+        this.id = id;
+        this.email = email;
+        this.login = login;
+        this.name = name;
+        this.birthday = birthday;
+    }
 
     public void addFriend(User friend) {
         friendsList.add(friend);

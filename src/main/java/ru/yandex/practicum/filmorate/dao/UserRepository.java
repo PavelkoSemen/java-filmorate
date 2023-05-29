@@ -5,7 +5,7 @@ import ru.yandex.practicum.filmorate.model.User;
 import java.util.List;
 import java.util.Optional;
 
-public interface UserDAO {
+public interface UserRepository {
     List<User> getAll();
 
     Optional<User> get(long id);
@@ -14,9 +14,9 @@ public interface UserDAO {
 
     Optional<User> update(User t);
 
-    void insertFriend(long userId, long friendId);
+    User insertFriend(long userId, long friendId);
 
-    void deleteFriend(long userId, long friendId);
+    User deleteFriend(long userId, long friendId);
 
     List<User> getMutualFriendsList(long id, long otherId);
 

@@ -7,7 +7,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import ru.yandex.practicum.filmorate.dao.DAO;
+import ru.yandex.practicum.filmorate.dao.UserRepository;
 import ru.yandex.practicum.filmorate.error.SaveUserException;
 import ru.yandex.practicum.filmorate.error.UnknownUserException;
 import ru.yandex.practicum.filmorate.model.User;
@@ -26,7 +26,7 @@ import static org.mockito.Mockito.verify;
 class UserServiceTest {
 
     @Mock
-    private DAO<User> userDAO;
+    private UserRepository userRepository;
 
     @InjectMocks
     private UserServiceImpl userService;
@@ -40,33 +40,31 @@ class UserServiceTest {
                 "se.pa.94@mail.ru",
                 "login",
                 "name",
-                LocalDate.of(1994, 3, 25),
-                Collections.emptySet());
+                LocalDate.of(1994, 3, 25));
         secondUser = new User(2,
                 "se.pa.95@mail.ru",
                 "login",
                 null,
-                LocalDate.of(1995, 3, 25),
-                Collections.emptySet());
+                LocalDate.of(1995, 3, 25));
     }
 
 
     @DisplayName("Должен сохранить и вернуть пользователя")
     @Test
     public void shouldSaveAndReturnTheMovie() {
-        given(userDAO.save(firstUser)).willReturn(Optional.of(firstUser));
+        given(userRepository.save(firstUser)).willReturn(Optional.of(firstUser));
 
         User actualFilm = userService.createUser(firstUser);
 
         assertEquals(firstUser, actualFilm);
 
-        verify(userDAO, times(1)).save(firstUser);
+        verify(userRepository, times(1)).save(firstUser);
     }
 
     @DisplayName("Должен сохранить пользователя, заменив null name на login")
     @Test
     public void shouldSaveAndReturnTheMovieReplacingAnEmptyName() {
-        given(userDAO.save(secondUser)).willReturn(Optional.of(secondUser));
+        given(userRepository.save(secondUser)).willReturn(Optional.of(secondUser));
 
         assertNull(secondUser.getName());
 
@@ -75,42 +73,42 @@ class UserServiceTest {
         assertEquals(secondUser, actualFilm);
         assertEquals(secondUser.getLogin(), secondUser.getName());
 
-        verify(userDAO, times(1)).save(secondUser);
+        verify(userRepository, times(1)).save(secondUser);
     }
 
     @DisplayName("Должен выкинуть исключение при сохранении пользователя")
     @Test
     public void shouldThrowAnExceptionWhenSavingAMovie() {
-        given(userDAO.save(firstUser)).willReturn(Optional.empty());
+        given(userRepository.save(firstUser)).willReturn(Optional.empty());
 
         assertThrows(SaveUserException.class,
                 () -> userService.createUser(firstUser));
 
-        verify(userDAO, times(1)).save(firstUser);
+        verify(userRepository, times(1)).save(firstUser);
     }
 
 
     @DisplayName("Должен обновить и вернуть пользователя")
     @Test
     public void shouldUpdateAndReturnTheMovie() {
-        given(userDAO.update(firstUser)).willReturn(Optional.of(firstUser));
+        given(userRepository.update(firstUser)).willReturn(Optional.of(firstUser));
 
         User actualUser = userService.updateUser(firstUser);
 
         assertEquals(firstUser, actualUser);
 
-        verify(userDAO, times(1)).update(firstUser);
+        verify(userRepository, times(1)).update(firstUser);
     }
 
     @DisplayName("Должен выкинуть исключение при обновлении пользователя")
     @Test
     public void shouldThrowAnExceptionWhenUpdatingAMovie() {
-        given(userDAO.update(firstUser)).willReturn(Optional.empty());
+        given(userRepository.update(firstUser)).willReturn(Optional.empty());
 
         assertThrows(UnknownUserException.class,
                 () -> userService.updateUser(firstUser));
 
-        verify(userDAO, times(1)).update(firstUser);
+        verify(userRepository, times(1)).update(firstUser);
     }
 
     @DisplayName("Должен вернуть список пользователей")
@@ -118,10 +116,10 @@ class UserServiceTest {
     public void shouldReturnAListOfMovies() {
         List<User> userList = List.of(firstUser, secondUser);
 
-        given(userDAO.getAll()).willReturn(userList);
+        given(userRepository.getAll()).willReturn(userList);
 
         assertEquals(userList, userService.getAllUsers());
 
-        verify(userDAO, times(1)).getAll();
+        verify(userRepository, times(1)).getAll();
     }
 }

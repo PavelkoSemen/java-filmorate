@@ -1,20 +1,18 @@
 package ru.yandex.practicum.filmorate.dao.impl;
 
 import lombok.extern.slf4j.Slf4j;
-import ru.yandex.practicum.filmorate.dao.DAO;
 import ru.yandex.practicum.filmorate.dao.EntityManagerPool;
-import ru.yandex.practicum.filmorate.dao.UserDAO;
+import ru.yandex.practicum.filmorate.dao.UserRepository;
 import ru.yandex.practicum.filmorate.error.DAOException;
 import ru.yandex.practicum.filmorate.model.User;
 import org.springframework.stereotype.Repository;
 
-import javax.persistence.Query;
 import java.util.List;
 import java.util.Optional;
 
 @Slf4j
 @Repository
-public class HibernateUserDAO implements DAO<User>, UserDAO {
+public class HibernateUserRepository implements UserRepository {
 
 
     @Override
@@ -37,12 +35,9 @@ public class HibernateUserDAO implements DAO<User>, UserDAO {
         log.info("Получение пользователя с id: {}", id);
         try {
             var entityManager = EntityManagerPool.getEntityManager();
-//            User user = entityManager.find(User.class, id);
-            Query q = entityManager.createQuery("SELECT u FROM User u LEFT JOIN FETCH u.friendsList WHERE u.id = :id");
-            q.setParameter("id", id);
-            User user = (User) q.getSingleResult();
+            User user = entityManager.find(User.class, id);
             entityManager.close();
-            return Optional.of(user);
+            return Optional.ofNullable(user);
         } catch (IllegalStateException e) {
             log.error("Ошибка получения пользователя с id: {}", id);
             throw new DAOException("Ошибка получения пользователя с id: " + id, e);
@@ -82,7 +77,6 @@ public class HibernateUserDAO implements DAO<User>, UserDAO {
                 modifiedUser.setLogin(user.getLogin());
                 modifiedUser.setEmail(user.getEmail());
                 modifiedUser.setBirthday(user.getBirthday());
-                modifiedUser.setFriendsList(user.getFriendsList());
                 entityManager.getTransaction().commit();
                 entityManager.close();
                 log.info("Пользователь {} обновлен", user);
@@ -94,51 +88,69 @@ public class HibernateUserDAO implements DAO<User>, UserDAO {
         }
     }
 
-    public void insertFriend(long userId, long friendId) {
-        var entityManager = EntityManagerPool.getEntityManager();
+    public User insertFriend(long userId, long friendId) {
+        log.info("Добавление пользователю {} друга {}", userId, friendId);
+        try {
+            var entityManager = EntityManagerPool.getEntityManager();
+            entityManager.getTransaction().begin();
 
-        entityManager.getTransaction().begin();
+            User user = entityManager.find(User.class, userId);
+            User friend = entityManager.find(User.class, friendId);
+            user.addFriend(friend);
+            friend.addFriend(user);
 
-        User user = entityManager.find(User.class, userId);
-        User friend = entityManager.find(User.class, friendId);
-        user.addFriend(friend);
-        friend.addFriend(user);
-
-        entityManager.getTransaction().commit();
-        entityManager.close();
+            entityManager.getTransaction().commit();
+            entityManager.close();
+            return user;
+        } catch (IllegalStateException e) {
+            log.error("Ошибка добавления друга {} пользователю {}", friendId, userId);
+            throw new DAOException("Ошибка добавления друга " + friendId + " пользователю " + userId, e);
+        }
     }
 
-    public void deleteFriend(long userId, long friendId) {
-        var entityManager = EntityManagerPool.getEntityManager();
+    public User deleteFriend(long userId, long friendId) {
+        log.info("Удаление у пользователя {} друга {}", userId, friendId);
 
-        entityManager.getTransaction().begin();
-        User user = entityManager.find(User.class, userId);
-        User friend = entityManager.find(User.class, friendId);
+        try {
+            var entityManager = EntityManagerPool.getEntityManager();
+            entityManager.getTransaction().begin();
 
-        user.removeFriend(friend);
-        friend.removeFriend(user);
-        entityManager.getTransaction().commit();
-        entityManager.close();
+            User user = entityManager.find(User.class, userId);
+            User friend = entityManager.find(User.class, friendId);
+            user.removeFriend(friend);
+            friend.removeFriend(user);
+
+            entityManager.getTransaction().commit();
+            entityManager.close();
+            return user;
+        } catch (IllegalStateException e) {
+            log.error("Ошибка удаления друга {} у пользователя {}", friendId, userId);
+            throw new DAOException("Ошибка удаления друга " + friendId + "  у пользователя " + userId, e);
+        }
     }
 
     @Override
     public List<User> getMutualFriendsList(long id, long otherId) {
-        var entityManager = EntityManagerPool.getEntityManager();
-        entityManager.getTransaction().begin();
-
-        @SuppressWarnings("unchecked") List<User> users = entityManager
-                .createNativeQuery("SELECT u.* FROM FRIENDS fi " +
-                        "INNER JOIN FRIENDS fo " +
-                        "   ON fi.friend_id = fo.friend_id AND fi.user_id = :id AND fo.user_id = :otherId " +
-                        "INNER JOIN USERS u " +
-                        "   ON u.id = fo.friend_id",User.class)
-                .setParameter("id", id)
-                .setParameter("otherId", otherId)
-                .getResultList();
-
-        entityManager.getTransaction().commit();
-        entityManager.close();
-        return users;
+        log.info("Получение списка пересекающихся друзей у {},{}", id, otherId);
+        try {
+            var entityManager = EntityManagerPool.getEntityManager();
+            entityManager.getTransaction().begin();
+            @SuppressWarnings("unchecked") List<User> users = entityManager
+                    .createNativeQuery("SELECT u.* FROM friends fi " +
+                            "INNER JOIN friends fo " +
+                            "    ON fi.friend_id = fo.friend_id AND fi.user_id = :id AND fo.user_id = :otherId " +
+                            "INNER JOIN users u " +
+                            "    ON u.id = fo.friend_id", User.class)
+                    .setParameter("id", id)
+                    .setParameter("otherId", otherId)
+                    .getResultList();
+            entityManager.getTransaction().commit();
+            entityManager.close();
+            return users;
+        } catch (IllegalStateException e) {
+            log.error("Ошибка получения списка пересекающихся друзей у {},{}", id, otherId);
+            throw new DAOException("Ошибка получения списка пересекающихся друзей у " + id + "," + otherId, e);
+        }
     }
 
     @Override
