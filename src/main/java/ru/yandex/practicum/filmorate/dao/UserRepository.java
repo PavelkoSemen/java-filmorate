@@ -18,6 +18,8 @@ public interface UserDAO {
 
     void deleteFriend(long userId, long friendId);
 
+    List<User> getMutualFriendsList(long id, long otherId);
+
     List<User> getFriendsList(long id);
 
     void delete(User t);

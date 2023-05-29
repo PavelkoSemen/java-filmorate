@@ -122,13 +122,36 @@ public class HibernateUserDAO implements DAO<User>, UserDAO {
     }
 
     @Override
+    public List<User> getMutualFriendsList(long id, long otherId) {
+        var entityManager = EntityManagerPool.getEntityManager();
+        entityManager.getTransaction().begin();
+
+        @SuppressWarnings("unchecked") List<User> users = entityManager
+                .createNativeQuery("SELECT u.* FROM FRIENDS fi " +
+                        "INNER JOIN FRIENDS fo " +
+                        "   ON fi.friend_id = fo.friend_id AND fi.user_id = :id AND fo.user_id = :otherId " +
+                        "INNER JOIN USERS u " +
+                        "   ON u.id = fo.friend_id",User.class)
+                .setParameter("id", id)
+                .setParameter("otherId", otherId)
+                .getResultList();
+
+        entityManager.getTransaction().commit();
+        entityManager.close();
+        return users;
+    }
+
+    @Override
     public List<User> getFriendsList(long id) {
         var entityManager = EntityManagerPool.getEntityManager();
         entityManager.getTransaction().begin();
-        return entityManager
+        List<User> users = entityManager
                 .createQuery("SELECT u FROM User u LEFT JOIN FETCH u.friendsList l WHERE l.id = :id",
                         User.class)
                 .setParameter("id", id).getResultList();
+        entityManager.getTransaction().commit();
+        entityManager.close();
+        return users;
     }
 
     @Override
