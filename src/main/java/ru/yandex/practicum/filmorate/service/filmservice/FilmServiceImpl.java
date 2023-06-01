@@ -25,34 +25,21 @@ public class FilmServiceImpl implements FilmService {
     @Override
     public Film createFilm(Film film) {
         log.info("Сохранение фильма: {}", film);
-        try {
-            return filmRepository.save(film).orElseThrow(() -> new SaveFilmException("Фильм не сохранен: " + film));
-        } catch (DAOException e) {
-            log.error("Ошибка сохранения фильма: {}", film);
-            throw new RepositoryException(e);
-        }
+        return filmRepository.save(film).orElseThrow(() -> new SaveFilmException("Фильм не сохранен: " + film));
     }
 
     @Override
     public Film getFilm(long id) {
         log.info("Получение фильма по id: {}", id);
-        try {
-            return filmRepository.get(id).orElseThrow(() -> new UnknownFilmException("Фильм не найден: " + id));
-        } catch (DAOException e) {
-            log.error("Ошибка получения фильма: {}", id);
-            throw new RepositoryException(e);
-        }
+
+        return filmRepository.get(id).orElseThrow(() -> new UnknownFilmException("Фильм не найден: " + id));
+
     }
 
     @Override
     public Film updateFilm(Film film) {
         log.info("Обновление фильма {}", film);
-        try {
-            return filmRepository.update(film).orElseThrow(() -> new UnknownFilmException("Фильм не найден: " + film));
-        } catch (DAOException e) {
-            log.error("Ошибка обновления фильма: {}", film);
-            throw new RepositoryException(e);
-        }
+        return filmRepository.update(film).orElseThrow(() -> new UnknownFilmException("Фильм не найден: " + film));
     }
 
     @Override
@@ -81,11 +68,6 @@ public class FilmServiceImpl implements FilmService {
     @Override
     public List<Film> getAllFilms() {
         log.info("Получение фильмов");
-        try {
-            return filmRepository.getAll();
-        } catch (DAOException e) {
-            log.error("Ошибка получения списка фильмов");
-            throw new RepositoryException(e);
-        }
+        return filmRepository.getAll();
     }
 }
