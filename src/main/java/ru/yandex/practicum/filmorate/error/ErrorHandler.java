@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.error;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -11,20 +12,12 @@ import org.springframework.web.context.request.WebRequest;
 import java.util.Date;
 
 @RestControllerAdvice
-public class ControllerExceptionHandler {
-    @ExceptionHandler(RepositoryException.class)
-    @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
-    public ErrorMessage repositoryException(RepositoryException ex, WebRequest request) {
-        return new ErrorMessage(
-                HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                new Date(),
-                ex.getMessage(),
-                request.getDescription(false));
-    }
-
+@Slf4j
+public class ErrorHandler {
     @ExceptionHandler(SaveUserException.class)
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
     public ErrorMessage saveUserException(SaveUserException ex, WebRequest request) {
+        log.error(ex.getMessage());
         return new ErrorMessage(
                 HttpStatus.BAD_REQUEST.value(),
                 new Date(),
@@ -35,6 +28,7 @@ public class ControllerExceptionHandler {
     @ExceptionHandler(SaveFilmException.class)
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
     public ErrorMessage saveFilmException(SaveFilmException ex, WebRequest request) {
+        log.error(ex.getMessage());
         return new ErrorMessage(
                 HttpStatus.BAD_REQUEST.value(),
                 new Date(),
@@ -45,6 +39,7 @@ public class ControllerExceptionHandler {
     @ExceptionHandler(UnknownUserException.class)
     @ResponseStatus(value = HttpStatus.NOT_FOUND)
     public ErrorMessage unknownUserException(UnknownUserException ex, WebRequest request) {
+        log.error(ex.getMessage());
         return new ErrorMessage(
                 HttpStatus.NOT_FOUND.value(),
                 new Date(),
@@ -55,6 +50,7 @@ public class ControllerExceptionHandler {
     @ExceptionHandler(UnknownFilmException.class)
     @ResponseStatus(value = HttpStatus.NOT_FOUND)
     public ErrorMessage unknownFilmException(UnknownFilmException ex, WebRequest request) {
+        log.error(ex.getMessage());
         return new ErrorMessage(
                 HttpStatus.NOT_FOUND.value(),
                 new Date(),
@@ -65,6 +61,7 @@ public class ControllerExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
     public ErrorMessage methodArgumentNotValidException(MethodArgumentNotValidException ex, WebRequest request) {
+        log.error(ex.getMessage());
         return new ErrorMessage(
                 HttpStatus.BAD_REQUEST.value(),
                 new Date(),

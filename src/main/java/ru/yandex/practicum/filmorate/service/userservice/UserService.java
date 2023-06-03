@@ -12,7 +12,13 @@ public interface UserService {
 
     User updateUser(User user);
 
-    void deleteUser(long id);
+    User addFriend(long userId, long friendId);
+
+    User removeFriend(long userId, long friendId);
+
+    List<User> getFriends(long id);
+
+    List<User> getMutualFriends(long id, long otherId);
 
     List<User> getAllUsers();
 }
