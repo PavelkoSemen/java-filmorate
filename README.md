@@ -1,7 +1,7 @@
 <h1 align="center">Filmorate</h1>
 <picture>
     <img src="База данных filmorate.png" alt="UML диаграмма" title="UML диаграмма"
-    style="display: block; margin: 0 auto; max-width: 400px;object-position: center;">
+    style="display: block; margin: 0 auto; object-position: center;">
 </picture>
 
 | Номер | Таблица    | Состав таблицы             |
