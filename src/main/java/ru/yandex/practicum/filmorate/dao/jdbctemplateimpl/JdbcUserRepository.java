@@ -32,13 +32,13 @@ public class JdbcUserRepository implements UserRepository {
     @Override
     public List<User> getAll() {
         log.info("Получение списка всех пользователей");
-        return jdbcTemplate.query(GET_ALL_USERS, this::extractData);
+        return jdbcTemplate.query(getAllUsers, this::extractData);
     }
 
     @Override
     public Optional<User> get(long id) {
         log.info("Получение пользователя с id: {}", id);
-        return jdbcTemplate.query(GET_USER_BY_ID, this::extractData, id).stream().findAny();
+        return jdbcTemplate.query(getUserById, this::extractData, id).stream().findAny();
     }
 
     @Override
@@ -57,7 +57,7 @@ public class JdbcUserRepository implements UserRepository {
     @Override
     public Optional<User> update(User user) {
         log.info("Обновление пользователя: {}", user);
-        int countRows = jdbcTemplate.update(UPDATE_USER,
+        int countRows = jdbcTemplate.update(updateUser,
                 user.getEmail(),
                 user.getLogin(),
                 user.getName(),
@@ -74,33 +74,33 @@ public class JdbcUserRepository implements UserRepository {
     @Override
     public void insertFriend(long userId, long friendId) {
         log.info("Добавление пользователю {} друга {}", userId, friendId);
-        jdbcTemplate.update(INSERT_INTO_FRIENDS, userId, friendId);
+        jdbcTemplate.update(insertIntoFriends, userId, friendId);
         log.info("Друг {} добавлен пользователю {}", userId, friendId);
     }
 
     @Override
     public void deleteFriend(long userId, long friendId) {
         log.info("Удаление у пользователя {} друга {}", userId, friendId);
-        jdbcTemplate.update(DELETE_FRIENDS, userId, friendId);
+        jdbcTemplate.update(deleteFriends, userId, friendId);
         log.info("Друг {} удален у пользователя {}", userId, friendId);
     }
 
     @Override
     public List<User> getMutualFriendsList(long id, long otherId) {
         log.info("Получение списка пересекающихся друзей у {},{}", id, otherId);
-        return jdbcTemplate.query(GET_MUTUAL_FRIENDS, this::extractData, id, otherId);
+        return jdbcTemplate.query(getMutualFriends, this::extractData, id, otherId);
     }
 
     @Override
     public List<User> getFriendsList(long id) {
         log.info("Получение списка друзей пользователя {}", id);
-        return jdbcTemplate.query(GET_FRIENDS, this::extractData, id);
+        return jdbcTemplate.query(getFriends, this::extractData, id);
     }
 
     @Override
     public void delete(User user) {
         log.info("Удаление пользователя: {}", user);
-        jdbcTemplate.update(DELETE_USER, user.getId());
+        jdbcTemplate.update(deleteUser, user.getId());
         log.info("Пользователь {} удален", user);
     }
 

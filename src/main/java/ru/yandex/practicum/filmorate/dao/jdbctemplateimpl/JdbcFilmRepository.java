@@ -37,13 +37,13 @@ public class JdbcFilmRepository implements FilmRepository {
     @Override
     public List<Film> getAll() {
         log.info("Получение списка всех фильмов");
-        return jdbcTemplate.query(GET_ALL_FILMS, this::extractData);
+        return jdbcTemplate.query(getAllFilms, this::extractData);
     }
 
     @Override
     public Optional<Film> get(long id) {
         log.info("Получение фильма с id: {}", id);
-        return jdbcTemplate.query(GET_FILM_BY_ID, this::extractData, id).stream().findAny();
+        return jdbcTemplate.query(getFilmById, this::extractData, id).stream().findAny();
     }
 
     @Override
@@ -63,7 +63,7 @@ public class JdbcFilmRepository implements FilmRepository {
     @Override
     public Optional<Film> update(Film film) {
         log.info("Обновление фильма: {}", film);
-        int countRows = jdbcTemplate.update(UPDATE_FILM,
+        int countRows = jdbcTemplate.update(updateFilm,
                 film.getName(),
                 film.getDescription(),
                 film.getReleaseDate(),
@@ -71,7 +71,7 @@ public class JdbcFilmRepository implements FilmRepository {
                 film.getMpa().getId(),
                 film.getId());
 
-        jdbcTemplate.update(DELETE_FILM_GENRE, film.getId());
+        jdbcTemplate.update(deleteFilmGenre, film.getId());
 
         insertGenres(film);
 
@@ -85,27 +85,27 @@ public class JdbcFilmRepository implements FilmRepository {
     @Override
     public void putLike(long filmId, long userId) {
         log.info("Добавить фильму {} лайк, от пользователя {}", filmId, userId);
-        jdbcTemplate.update(INSERT_INTO_LIKES, filmId, userId);
+        jdbcTemplate.update(insertIntoLikes, filmId, userId);
         log.info("Добавлен лайк фильму {} , от пользователя {}", filmId, userId);
     }
 
     @Override
     public void deleteLike(long filmId, long userId) {
         log.info("Удалить у фильма {} лайк, от пользователя {}", filmId, userId);
-        jdbcTemplate.update(DELETE_LIKES, filmId, userId);
+        jdbcTemplate.update(deleteLikes, filmId, userId);
         log.info("Удален лайк у фильма {} , от пользователя {}", filmId, userId);
     }
 
     @Override
     public List<Film> findTopFilms(int countFilms) {
         log.info("Вернуть топ {} фильмов", countFilms);
-        return jdbcTemplate.query(GET_TOP_FILMS, this::extractData, countFilms);
+        return jdbcTemplate.query(getTopFilms, this::extractData, countFilms);
     }
 
     @Override
     public void delete(Film film) {
         log.info("Удаление фильма: {}", film);
-        jdbcTemplate.update(DELETE_FILM, film.getId());
+        jdbcTemplate.update(deleteFilm, film.getId());
         log.info("Фильма {} удален", film);
     }
 
@@ -115,7 +115,7 @@ public class JdbcFilmRepository implements FilmRepository {
                 .collect(Collectors.toList());
         System.out.println(genresId);
         if (!genresId.isEmpty()) {
-            jdbcTemplate.batchUpdate(INSERT_INTO_FILM_GENRE, new BatchPreparedStatementSetter() {
+            jdbcTemplate.batchUpdate(insertIntoFilmGenre, new BatchPreparedStatementSetter() {
                 @Override
                 public void setValues(PreparedStatement ps, int i) throws SQLException {
                     ps.setLong(1, film.getId());

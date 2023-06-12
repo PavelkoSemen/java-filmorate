@@ -88,7 +88,7 @@ public class HibernateUserRepository implements UserRepository {
     public List<User> getMutualFriendsList(long id, long otherId) {
         log.info("Получение списка пересекающихся друзей у {},{}", id, otherId);
         @SuppressWarnings("unchecked") List<User> users = entityManager
-                .createNativeQuery(UsersSQL.GET_MUTUAL_FRIENDS, User.class)
+                .createNativeQuery(UsersSQL.getMutualFriends, User.class)
                 .setParameter(1, id)
                 .setParameter(2, otherId)
                 .getResultList();
@@ -99,7 +99,7 @@ public class HibernateUserRepository implements UserRepository {
     public List<User> getFriendsList(long id) {
         log.info("Получение списка друзей пользователя {}", id);
         @SuppressWarnings("unchecked") List<User> users = entityManager
-                .createNativeQuery(UsersSQL.GET_FRIENDS, User.class)
+                .createNativeQuery(UsersSQL.getFriends, User.class)
                 .setParameter(1, id)
                 .getResultList();
         return users;

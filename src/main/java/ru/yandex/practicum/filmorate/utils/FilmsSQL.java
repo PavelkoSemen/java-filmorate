@@ -4,7 +4,7 @@ public final class FilmsSQL {
     private FilmsSQL() {
     }
 
-    public static final String GET_ALL_FILMS = "SELECT f.*\n" +
+    public static final String getAllFilms = "SELECT f.*\n" +
             "     , m.*\n" +
             "     , g.*\n" +
             "FROM films f\n" +
@@ -15,7 +15,7 @@ public final class FilmsSQL {
             "         LEFT JOIN genres g\n" +
             "                   ON g.genre_id = fg.genre_id\n";
 
-    public static final String GET_FILM_BY_ID = "SELECT f.*\n" +
+    public static final String getFilmById = "SELECT f.*\n" +
             "     , m.*\n" +
             "     , g.*\n" +
             "FROM films f\n" +
@@ -27,7 +27,7 @@ public final class FilmsSQL {
             "                   ON g.genre_id = fg.genre_id\n" +
             " WHERE f.film_id = ?";
 
-    public static final String GET_TOP_FILMS = "SELECT f.*\n" +
+    public static final String getTopFilms = "SELECT f.*\n" +
             "     , m.*\n" +
             "     , g.*\n" +
             "FROM films f\n" +
@@ -45,14 +45,14 @@ public final class FilmsSQL {
             "ORDER BY count_likes desc\n" +
             "LIMIT ?";
 
-    public static final String INSERT_INTO_FILM_GENRE = "INSERT INTO film_genre(film_id, genre_id)\n" +
+    public static final String insertIntoFilmGenre = "INSERT INTO film_genre(film_id, genre_id)\n" +
             "VALUES (?, ?)";
-    public static final String DELETE_FILM_GENRE = "DELETE FROM film_genre WHERE film_id = ?";
-    public static final String UPDATE_FILM = "UPDATE films SET\n" +
+    public static final String deleteFilmGenre = "DELETE FROM film_genre WHERE film_id = ?";
+    public static final String updateFilm = "UPDATE films SET\n" +
             "name = ?, description = ?, release = ?, duration = ?, mpa_id = ?\n" +
             "WHERE film_id = ?";
-    public static final String DELETE_FILM = "DELETE FROM films WHERE film_id = ?";
-    public static final String INSERT_INTO_LIKES = "INSERT INTO likes(film_id, user_id)\n" +
+    public static final String deleteFilm = "DELETE FROM films WHERE film_id = ?";
+    public static final String insertIntoLikes = "INSERT INTO likes(film_id, user_id)\n" +
             "VALUES (?, ?)";
-    public static final String DELETE_LIKES = "DELETE FROM likes WHERE film_id = ? AND user_id = ?";
+    public static final String deleteLikes = "DELETE FROM likes WHERE film_id = ? AND user_id = ?";
 }
