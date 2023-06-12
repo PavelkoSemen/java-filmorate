@@ -17,8 +17,8 @@ import java.util.Optional;
 @Slf4j
 public class JdbcGenreRepository implements GenreRepository {
 
-    private final String GET_GENRE_BY_ID = "SELECT * FROM genres WHERE genre_id = ?";
-    private final String GET_ALL_GENRES = "SELECT * FROM genres";
+    private final String getGenreById = "SELECT * FROM genres WHERE genre_id = ?";
+    private final String getAllGenres = "SELECT * FROM genres";
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -29,13 +29,13 @@ public class JdbcGenreRepository implements GenreRepository {
     @Override
     public Optional<Genre> get(long id) {
         log.info("Получение жанра с id: {}", id);
-        return jdbcTemplate.query(GET_GENRE_BY_ID, this::mapRow, id).stream().findAny();
+        return jdbcTemplate.query(getGenreById, this::mapRow, id).stream().findAny();
     }
 
     @Override
     public List<Genre> getAll() {
         log.info("Получение списка всех жанров");
-        return jdbcTemplate.query(GET_ALL_GENRES, this::mapRow);
+        return jdbcTemplate.query(getAllGenres, this::mapRow);
     }
 
 

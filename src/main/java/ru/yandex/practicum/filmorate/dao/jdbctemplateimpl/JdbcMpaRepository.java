@@ -17,8 +17,8 @@ import java.util.Optional;
 @Primary
 @Slf4j
 public class JdbcMpaRepository implements MpaRepository {
-    private final String GET_MPA_BY_ID = "SELECT * FROM mpa WHERE mpa_id = ?";
-    private final String GET_ALL_MPA = "SELECT * FROM mpa";
+    private final String getMpaById = "SELECT * FROM mpa WHERE mpa_id = ?";
+    private final String getAllMpa = "SELECT * FROM mpa";
     private final JdbcTemplate jdbcTemplate;
 
     @Autowired
@@ -29,13 +29,13 @@ public class JdbcMpaRepository implements MpaRepository {
     @Override
     public Optional<Mpa> get(long id) {
         log.info("Возрастное ограничение с id: {}", id);
-        return jdbcTemplate.query(GET_MPA_BY_ID, this::mapRow, id).stream().findAny();
+        return jdbcTemplate.query(getMpaById, this::mapRow, id).stream().findAny();
     }
 
     @Override
     public List<Mpa> getAll() {
         log.info("Получение списка всех возрастных ограничений");
-        return jdbcTemplate.query(GET_ALL_MPA, this::mapRow);
+        return jdbcTemplate.query(getAllMpa, this::mapRow);
     }
 
     public Mpa mapRow(ResultSet rs, int rowNum) throws SQLException {
