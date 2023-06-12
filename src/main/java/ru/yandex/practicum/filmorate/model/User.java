@@ -8,7 +8,9 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.PastOrPresent;
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 @Entity
@@ -19,6 +21,7 @@ import java.util.Set;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "user_id")
     private long id;
     @Email(message = "Does not match the email")
     private String email;
@@ -60,5 +63,14 @@ public class User {
 
     public void removeFriend(User friend) {
         friendsList.remove(friend);
+    }
+
+    public Map<String, Object> toMap() {
+        Map<String, Object> values = new HashMap<>();
+        values.put("NAME", name);
+        values.put("LOGIN", login);
+        values.put("EMAIL", email);
+        values.put("BIRTHDAY", birthday);
+        return values;
     }
 }

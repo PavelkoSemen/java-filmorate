@@ -3,7 +3,6 @@ package ru.yandex.practicum.filmorate.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.userservice.UserService;
 
@@ -40,13 +39,13 @@ public class UserController {
     }
 
     @PutMapping(path = "/users/{id}/friends/{friendId}")
-    public User addFriends(@PathVariable long id, @PathVariable long friendId) {
-        return userService.addFriend(id, friendId);
+    public void addFriends(@PathVariable long id, @PathVariable long friendId) {
+        userService.addFriend(id, friendId);
     }
 
     @DeleteMapping(path = "/users/{id}/friends/{friendId}")
-    public User deletedFriends(@PathVariable long id, @PathVariable long friendId) {
-        return userService.removeFriend(id, friendId);
+    public void deletedFriends(@PathVariable long id, @PathVariable long friendId) {
+        userService.removeFriend(id, friendId);
     }
 
     @GetMapping("/users/{id}/friends")

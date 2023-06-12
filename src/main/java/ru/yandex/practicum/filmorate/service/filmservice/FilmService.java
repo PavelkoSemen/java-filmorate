@@ -12,7 +12,7 @@ public interface FilmService {
 
     Film updateFilm(Film film);
 
-    Film putLike(long id, long userId);
+    void putLike(long id, long userId);
 
     void deleteLike(long id, long userId);
 

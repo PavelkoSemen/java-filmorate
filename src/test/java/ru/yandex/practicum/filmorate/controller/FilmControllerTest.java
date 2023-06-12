@@ -8,12 +8,14 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.yandex.practicum.filmorate.error.UnknownFilmException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.service.filmservice.FilmService;
 
 import java.time.LocalDate;
@@ -21,7 +23,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static org.mockito.BDDMockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -29,7 +32,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
-@WebMvcTest(FilmController.class)
+@SpringBootTest
+@AutoConfigureMockMvc
 class FilmControllerTest {
 
     @Autowired
@@ -46,16 +50,22 @@ class FilmControllerTest {
 
     @BeforeEach
     void setUp() {
+        Mpa mpaFirst = new Mpa();
+        mpaFirst.setId(1);
+        Mpa mpaSecond = new Mpa();
+        mpaSecond.setId(2);
         firstFilm = new Film(1,
                 "nisi eiusmod",
                 "adipisicing",
                 LocalDate.of(1967, 3, 25),
-                100);
+                100,
+                mpaFirst);
         secondFilm = new Film(2,
                 "nisi eiusmod",
                 "adipisicing",
                 LocalDate.of(1967, 3, 25),
-                100);
+                100,
+                mpaSecond);
     }
 
     @DisplayName("Должен вернуть код 4xx, и сообщение об ошибке")
@@ -135,26 +145,29 @@ class FilmControllerTest {
     }
 
     static Stream<Arguments> filmsAndErrorMessage() {
-
+        Mpa mpaFirst = new Mpa();
+        mpaFirst.setId(1);
+        Mpa mpaSecond = new Mpa();
+        mpaSecond.setId(2);
         return Stream.of(
                 arguments(
                         new Film(0, null, "Description",
-                                LocalDate.of(1900, 3, 25), 200),
+                                LocalDate.of(1900, 3, 25), 200, mpaFirst),
                         "Name cannot be empty"),
 
                 arguments(
                         new Film(0, "Name", "t".repeat(250),
-                                LocalDate.of(1900, 3, 25), 200),
+                                LocalDate.of(1900, 3, 25), 200, mpaFirst),
                         "Description length is more than 200 characters"),
 
                 arguments(
                         new Film(0, "Name", "Description",
-                                LocalDate.of(1890, 3, 25), 200),
+                                LocalDate.of(1890, 3, 25), 200, mpaSecond),
                         "Invalid film realise date"),
 
                 arguments(
                         new Film(0, "Name", "Description",
-                                LocalDate.of(1980, 3, 25), -200),
+                                LocalDate.of(1980, 3, 25), -200, mpaSecond),
                         "Duration of the film is negative")
         );
     }

@@ -1,44 +1,46 @@
-package ru.yandex.practicum.filmorate.dao.impl;
+package ru.yandex.practicum.filmorate.dao.hibernateimpl;
 
 import lombok.extern.slf4j.Slf4j;
-import ru.yandex.practicum.filmorate.dao.EntityManagerPool;
+import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.dao.FilmRepository;
 import ru.yandex.practicum.filmorate.model.Film;
-import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.User;
 
-import java.util.*;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.transaction.Transactional;
+import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Repository
 public class HibernateFilmRepository implements FilmRepository {
 
+    @PersistenceContext
+    private EntityManager entityManager;
+
+    public HibernateFilmRepository(EntityManager entityManager) {
+        this.entityManager = entityManager;
+    }
+
     @Override
     public List<Film> getAll() {
         log.info("Получение списка всех фильмов");
-        var entityManager = EntityManagerPool.getEntityManager();
-        List<Film> films = entityManager.createQuery("FROM Film", Film.class).getResultList();
-        entityManager.close();
-        return films;
+        return entityManager.createQuery("FROM Film", Film.class).getResultList();
     }
 
     @Override
     public Optional<Film> get(long id) {
         log.info("Получение фильма с id: {}", id);
-        var entityManager = EntityManagerPool.getEntityManager();
         Film film = entityManager.find(Film.class, id);
-        entityManager.close();
         return Optional.ofNullable(film);
     }
 
     @Override
+    @Transactional
     public Optional<Film> save(Film film) {
         log.info("Сохранение фильма: {}", film);
-        var entityManager = EntityManagerPool.getEntityManager();
-        entityManager.getTransaction().begin();
         entityManager.persist(film);
-        entityManager.getTransaction().commit();
-        entityManager.close();
         if (film.getId() == 0)
             return Optional.empty();
         log.info("Фильма {} сохранен", film);
@@ -46,78 +48,66 @@ public class HibernateFilmRepository implements FilmRepository {
     }
 
     @Override
+    @Transactional
     public Optional<Film> update(Film film) {
         log.info("Обновление фильма: {}", film);
-        var entityManager = EntityManagerPool.getEntityManager();
         Optional<Film> optionalFilm = Optional.empty();
         Film modifiedFilm = entityManager.find(Film.class, film.getId());
-
         if (modifiedFilm != null) {
             optionalFilm = Optional.of(modifiedFilm);
-            entityManager.getTransaction().begin();
             modifiedFilm.setName(film.getName());
             modifiedFilm.setDescription(film.getDescription());
             modifiedFilm.setDuration(film.getDuration());
             modifiedFilm.setReleaseDate(film.getReleaseDate());
-            entityManager.getTransaction().commit();
+            modifiedFilm.setMpa(film.getMpa());
+            modifiedFilm.setGenres(film.getGenres());
             log.info("Фильма {} обновлен", film);
         }
-        entityManager.close();
         return optionalFilm;
     }
 
     @Override
-    public Film putLike(long filmId, long userId) {
+    @Transactional
+    public void putLike(long filmId, long userId) {
         log.info("Добавить фильму {} лайк, от пользователя {}", filmId, userId);
-        var entityManager = EntityManagerPool.getEntityManager();
-        entityManager.getTransaction().begin();
         Film film = entityManager.find(Film.class, filmId);
         User user = entityManager.find(User.class, userId);
         film.addUser(user);
-        entityManager.getTransaction().commit();
-        return film;
+        log.info("Добавлен лайк фильму {} , от пользователя {}", filmId, userId);
     }
 
     @Override
-    public Film deleteLike(long filmId, long userId) {
+    @Transactional
+    public void deleteLike(long filmId, long userId) {
         log.info("Удалить у фильма {} лайк, от пользователя {}", filmId, userId);
-        var entityManager = EntityManagerPool.getEntityManager();
-        entityManager.getTransaction().begin();
         Film film = entityManager.find(Film.class, filmId);
         User user = entityManager.find(User.class, userId);
         film.removeUser(user);
-        return film;
+        log.info("Удален лайк у фильма {} , от пользователя {}", filmId, userId);
     }
 
     @Override
     public List<Film> findTopFilms(int countFilms) {
         log.info("Вернуть топ {} фильмов", countFilms);
-        var entityManager = EntityManagerPool.getEntityManager();
-        entityManager.getTransaction().begin();
         @SuppressWarnings("unchecked") List<Film> films = entityManager
                 .createNativeQuery("SELECT f.* FROM films f " +
                                 "LEFT JOIN (SELECT film_id " +
                                 "                   ,COUNT(user_id) as count_likes " +
                                 "              FROM likes " +
                                 "              GROUP BY film_id) cf " +
-                                "    ON cf.film_id= f.id " +
+                                "    ON cf.film_id= f.film_id " +
                                 "ORDER BY count_likes desc",
                         Film.class)
                 .setMaxResults(countFilms)
                 .getResultList();
-        entityManager.getTransaction().commit();
-        entityManager.close();
         return films;
     }
 
     @Override
+    @Transactional
     public void delete(Film film) {
         log.info("Удаление фильма: {}", film);
-        var entityManager = EntityManagerPool.getEntityManager();
-        entityManager.getTransaction().begin();
         entityManager.remove(film);
-        entityManager.getTransaction().commit();
-        entityManager.close();
         log.info("Фильма {} удален", film);
     }
 }

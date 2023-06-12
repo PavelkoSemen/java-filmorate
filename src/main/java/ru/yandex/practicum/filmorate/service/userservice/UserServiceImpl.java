@@ -1,12 +1,12 @@
 package ru.yandex.practicum.filmorate.service.userservice;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dao.UserRepository;
 import ru.yandex.practicum.filmorate.error.SaveUserException;
 import ru.yandex.practicum.filmorate.error.UnknownUserException;
 import ru.yandex.practicum.filmorate.model.User;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 
@@ -42,23 +42,23 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User addFriend(long userId, long friendId) {
+    public void addFriend(long userId, long friendId) {
         userRepository.get(userId).orElseThrow(() ->
                 new UnknownUserException("Пользователь не найден: " + userId));
         userRepository.get(friendId).orElseThrow(() ->
                 new UnknownUserException("Пользователь не найден: " + friendId));
 
-        return userRepository.insertFriend(userId, friendId);
+        userRepository.insertFriend(userId, friendId);
     }
 
     @Override
-    public User removeFriend(long userId, long friendId) {
+    public void removeFriend(long userId, long friendId) {
         userRepository.get(userId).orElseThrow(() ->
                 new UnknownUserException("Пользователь не найден: " + userId));
         userRepository.get(friendId).orElseThrow(() ->
                 new UnknownUserException("Пользователь не найден: " + friendId));
 
-        return userRepository.deleteFriend(userId, friendId);
+        userRepository.deleteFriend(userId, friendId);
     }
 
     @Override

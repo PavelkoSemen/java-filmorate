@@ -1,12 +1,14 @@
 package ru.yandex.practicum.filmorate.service.filmservice;
 
 import lombok.extern.slf4j.Slf4j;
-import ru.yandex.practicum.filmorate.dao.FilmRepository;
-import ru.yandex.practicum.filmorate.dao.UserRepository;
-import ru.yandex.practicum.filmorate.error.*;
-import ru.yandex.practicum.filmorate.model.Film;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.dao.FilmRepository;
+import ru.yandex.practicum.filmorate.dao.UserRepository;
+import ru.yandex.practicum.filmorate.error.SaveFilmException;
+import ru.yandex.practicum.filmorate.error.UnknownFilmException;
+import ru.yandex.practicum.filmorate.error.UnknownUserException;
+import ru.yandex.practicum.filmorate.model.Film;
 
 import java.util.List;
 
@@ -43,12 +45,12 @@ public class FilmServiceImpl implements FilmService {
     }
 
     @Override
-    public Film putLike(long id, long userId) {
+    public void putLike(long id, long userId) {
         filmRepository.get(id).orElseThrow(() ->
                 new UnknownFilmException("Фильм не найден: " + id));
         userRepository.get(userId).orElseThrow(() ->
                 new UnknownUserException("Пользователь не найден: " + userId));
-        return filmRepository.putLike(id, userId);
+        filmRepository.putLike(id, userId);
     }
 
     @Override

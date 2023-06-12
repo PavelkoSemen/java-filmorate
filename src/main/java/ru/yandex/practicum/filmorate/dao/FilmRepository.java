@@ -14,9 +14,9 @@ public interface FilmRepository {
 
     Optional<Film> update(Film t);
 
-    Film putLike(long filmId, long userId);
+    void putLike(long filmId, long userId);
 
-    Film deleteLike(long filmId, long userId);
+    void deleteLike(long filmId, long userId);
 
     List<Film> findTopFilms(int countFilms);
 
