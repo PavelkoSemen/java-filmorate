@@ -45,7 +45,7 @@ public final class FilmsSQL {
             "ORDER BY count_likes desc\n" +
             "LIMIT ?";
 
-    public static final String insertIntoFilm ="INSERT INTO films(name, description, release, duration, mpa_id)\n" +
+    public static final String insertIntoFilm = "INSERT INTO films(name, description, release, duration, mpa_id)\n" +
             "VALUES (?, ?, ?, ?, ?)";
     public static final String insertIntoFilmGenre = "INSERT INTO film_genre(film_id, genre_id)\n" +
             "VALUES (?, ?)";
