@@ -11,12 +11,14 @@ import ru.yandex.practicum.filmorate.dao.FilmRepository;
 import ru.yandex.practicum.filmorate.error.SaveFilmException;
 import ru.yandex.practicum.filmorate.error.UnknownFilmException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Mpa;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -35,16 +37,22 @@ class FilmServiceTest {
 
     @BeforeEach
     void setUp() {
+        Mpa mpaFirst = new Mpa();
+        mpaFirst.setId(1);
+        Mpa mpaSecond = new Mpa();
+        mpaSecond.setId(2);
         firstFilm = new Film(1,
                 "film1",
                 "film1",
                 LocalDate.of(2005, 3, 25),
-                100);
+                100,
+                mpaFirst);
         secondFilm = new Film(2,
                 "film2",
                 "film2",
                 LocalDate.of(2015, 3, 25),
-                100);
+                100,
+                mpaSecond);
     }
 
 

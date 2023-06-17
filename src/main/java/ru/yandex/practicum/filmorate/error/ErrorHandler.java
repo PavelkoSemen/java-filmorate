@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 
-
 import java.util.Date;
 
 @RestControllerAdvice
@@ -50,6 +49,28 @@ public class ErrorHandler {
     @ExceptionHandler(UnknownFilmException.class)
     @ResponseStatus(value = HttpStatus.NOT_FOUND)
     public ErrorMessage unknownFilmException(UnknownFilmException ex, WebRequest request) {
+        log.error(ex.getMessage());
+        return new ErrorMessage(
+                HttpStatus.NOT_FOUND.value(),
+                new Date(),
+                ex.getMessage(),
+                request.getDescription(false));
+    }
+
+    @ExceptionHandler(UnknownGenreException.class)
+    @ResponseStatus(value = HttpStatus.NOT_FOUND)
+    public ErrorMessage unknownGenreException(UnknownGenreException ex, WebRequest request) {
+        log.error(ex.getMessage());
+        return new ErrorMessage(
+                HttpStatus.NOT_FOUND.value(),
+                new Date(),
+                ex.getMessage(),
+                request.getDescription(false));
+    }
+
+    @ExceptionHandler(UnknownMpaException.class)
+    @ResponseStatus(value = HttpStatus.NOT_FOUND)
+    public ErrorMessage unknownMpaException(UnknownMpaException ex, WebRequest request) {
         log.error(ex.getMessage());
         return new ErrorMessage(
                 HttpStatus.NOT_FOUND.value(),

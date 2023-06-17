@@ -14,9 +14,9 @@ public interface UserRepository {
 
     Optional<User> update(User t);
 
-    User insertFriend(long userId, long friendId);
+    void insertFriend(long userId, long friendId);
 
-    User deleteFriend(long userId, long friendId);
+    void deleteFriend(long userId, long friendId);
 
     List<User> getMutualFriendsList(long id, long otherId);
 
