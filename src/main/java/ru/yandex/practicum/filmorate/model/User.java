@@ -8,9 +8,7 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.PastOrPresent;
 import java.time.LocalDate;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 @Entity
@@ -63,14 +61,5 @@ public class User {
 
     public void removeFriend(User friend) {
         friendsList.remove(friend);
-    }
-
-    public Map<String, Object> toMap() {
-        Map<String, Object> values = new HashMap<>();
-        values.put("NAME", name);
-        values.put("LOGIN", login);
-        values.put("EMAIL", email);
-        values.put("BIRTHDAY", birthday);
-        return values;
     }
 }

@@ -3,11 +3,11 @@ package ru.yandex.practicum.filmorate.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Set;
 
 @Entity
@@ -22,24 +22,13 @@ public class Genre implements Comparable<Genre> {
     private long id;
 
     @Column(name = "genre_name")
+    @EqualsAndHashCode.Exclude
     private String name;
 
     @ManyToMany(mappedBy = "genres")
     @JsonIgnore
+    @EqualsAndHashCode.Exclude
     private Set<Film> films = new HashSet<>();
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Genre genre = (Genre) o;
-        return id == genre.id;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
-    }
 
     @Override
     public int compareTo(Genre o) {

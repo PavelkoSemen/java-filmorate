@@ -9,7 +9,9 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.TreeSet;
 
 @Entity
 @Data
@@ -81,15 +83,5 @@ public class Film {
 
     public void removeGenre(Genre genre) {
         genres.remove(genre);
-    }
-
-    public Map<String, Object> toMap() {
-        Map<String, Object> values = new HashMap<>();
-        values.put("NAME", name);
-        values.put("DESCRIPTION", description);
-        values.put("RELEASE", releaseDate);
-        values.put("DURATION", duration);
-        values.put("MPA_ID", mpa.getId());
-        return values;
     }
 }

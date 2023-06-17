@@ -18,6 +18,9 @@ public final class UsersSQL {
             "FROM users u\n" +
             "         INNER JOIN (SELECT * FROM friends where user_id = ?) f\n" +
             "                    ON u.user_id = f.friend_id";
+
+    public static final String insertIntoUser = "INSERT INTO users(email, login, name, birthday)\n" +
+            "VALUES (?, ?, ?, ?)";
     public static final String updateUser = "UPDATE users SET\n" +
             "email = ?, login = ?, name = ?, birthday = ?\n" +
             "WHERE user_id = ?";
