@@ -121,7 +121,6 @@ public class JdbcFilmRepository implements FilmRepository {
         List<Long> genresId = film.getGenres().stream()
                 .map(Genre::getId)
                 .collect(Collectors.toList());
-        System.out.println(genresId);
         if (!genresId.isEmpty()) {
             jdbcTemplate.batchUpdate(insertIntoFilmGenre, new BatchPreparedStatementSetter() {
                 @Override
