@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static ru.yandex.practicum.filmorate.utils.FilmsSQL.*;
+import static ru.yandex.practicum.filmorate.service.filmservice.utils.FilmsSQL.*;
 
 @Repository
 @Primary

@@ -17,7 +17,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
-import static ru.yandex.practicum.filmorate.utils.UsersSQL.*;
+import static ru.yandex.practicum.filmorate.service.filmservice.utils.UsersSQL.*;
 
 
 @Repository
