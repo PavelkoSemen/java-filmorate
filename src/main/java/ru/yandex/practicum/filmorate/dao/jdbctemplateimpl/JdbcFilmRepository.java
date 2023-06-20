@@ -9,6 +9,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.dao.FilmRepository;
+import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
@@ -64,6 +65,7 @@ public class JdbcFilmRepository implements FilmRepository {
 
         film.setId(keyHolder.getKey().longValue());
         insertGenres(film);
+        insertDirectors(film);
         log.info("Фильма {} сохранен", film);
         return Optional.of(film);
     }
@@ -80,8 +82,10 @@ public class JdbcFilmRepository implements FilmRepository {
                 film.getId());
 
         jdbcTemplate.update(deleteFilmGenre, film.getId());
+        jdbcTemplate.update(deleteFilmDirector, film.getId());
 
         insertGenres(film);
+        insertDirectors(film);
 
         if (countRows > 0) {
             log.info("Фильма {} обновлен", film);
@@ -137,6 +141,26 @@ public class JdbcFilmRepository implements FilmRepository {
         }
     }
 
+    private void insertDirectors(Film film) {
+        List<Long> directorsId = film.getDirectors().stream()
+                .map(Director::getId)
+                .collect(Collectors.toList());
+        if (!directorsId.isEmpty()) {
+            jdbcTemplate.batchUpdate(insertIntoFilmDirector, new BatchPreparedStatementSetter() {
+                @Override
+                public void setValues(PreparedStatement ps, int i) throws SQLException {
+                    ps.setLong(1, film.getId());
+                    ps.setLong(2, directorsId.get(i));
+                }
+
+                @Override
+                public int getBatchSize() {
+                    return directorsId.size();
+                }
+            });
+        }
+    }
+
     private List<Film> extractData(ResultSet rs) throws SQLException {
         List<Film> list = new ArrayList<>();
         Film currentFilm = new Film();
@@ -150,8 +174,10 @@ public class JdbcFilmRepository implements FilmRepository {
             if (rs.getLong("GENRE_ID") != 0) {
                 currentFilm.addGenre(mapRowGenre(rs));
             }
+            if (rs.getLong("DIRECTOR_ID") != 0) {
+                currentFilm.addDirector(mapRowDirector(rs));
+            }
         }
-
         return list;
     }
 
@@ -161,6 +187,14 @@ public class JdbcFilmRepository implements FilmRepository {
         genre.setId(rs.getLong("GENRE_ID"));
         genre.setName(rs.getString("GENRE_NAME"));
         return genre;
+    }
+
+    private Director mapRowDirector(ResultSet rs) throws SQLException {
+        log.info("Заполнение режиссеров");
+        Director director = new Director();
+        director.setId(rs.getLong("DIRECTOR_ID"));
+        director.setName(rs.getString("DIRECTOR_NAME"));
+        return director;
     }
 
     private Film mapRowFilms(ResultSet rs) throws SQLException {
