@@ -18,6 +18,8 @@ public interface FilmService {
 
     List<Film> getTopFilms(int count);
 
+    List<Film> getMutualTopFilms(long userId, long friendId);
+
     List<Film> getAllFilms();
 
 }

@@ -17,8 +17,8 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -113,5 +113,22 @@ class FilmServiceTest {
         assertEquals(filmList, filmService.getAllFilms());
 
         verify(filmRepository, times(1)).getAll();
+    }
+
+    @DisplayName("Должен вернуть список общих фильмов")
+    @Test
+    public void shouldReturnMutualTopFilms() {
+        List<Film> firstFilmsList = List.of(firstFilm, secondFilm);
+        List<Film> secondFilmsList = List.of(secondFilm);
+
+        given(filmRepository.findTopFilmsByUserId(1)).willReturn(firstFilmsList);
+        given(filmRepository.findTopFilmsByUserId(2)).willReturn(secondFilmsList);
+
+        List<Film> currentList = filmService.getMutualTopFilms(1, 2);
+
+        assertTrue(currentList.contains(secondFilm));
+        assertEquals(1, currentList.size());
+
+        verify(filmRepository, times(2)).findTopFilmsByUserId(any(Long.class));
     }
 }

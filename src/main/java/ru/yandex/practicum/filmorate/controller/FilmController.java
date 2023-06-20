@@ -52,4 +52,9 @@ public class FilmController {
     public List<Film> getTopFilms(@RequestParam(defaultValue = "10") int count) {
         return filmService.getTopFilms(count);
     }
+
+    @GetMapping(path = "/films/common")
+    public List<Film> getMutualTopFilms(@RequestParam int userId, @RequestParam int friendId) {
+        return filmService.getMutualTopFilms(userId, friendId);
+    }
 }
