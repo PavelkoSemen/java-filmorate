@@ -18,8 +18,7 @@ import java.util.Optional;
 @Primary
 @Slf4j
 public class JdbcDirectorRepository implements DirectorRepository {
-    private static final String queryAddFilmDirector = "INSERT INTO film_director(film_id, director_id)\n" +
-            "            \"VALUES (?, ?)";
+    private static final String queryAddFilmDirector = "INSERT INTO film_director(film_id, director_id) VALUES (?, ?)";
     private static final String queryAddDirector = "INSERT INTO directors(director_name) VALUES (?)";
 
     private final JdbcTemplate jdbcTemplate;
