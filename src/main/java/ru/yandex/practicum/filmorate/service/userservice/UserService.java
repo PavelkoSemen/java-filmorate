@@ -21,4 +21,6 @@ public interface UserService {
     List<User> getMutualFriends(long id, long otherId);
 
     List<User> getAllUsers();
+
+    User deleteUser(long id);
 }

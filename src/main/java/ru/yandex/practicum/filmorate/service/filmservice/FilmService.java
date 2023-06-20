@@ -22,4 +22,5 @@ public interface FilmService {
 
     List<Film> getAllFilms();
 
+    Film deleteFilm(long filmId);
 }

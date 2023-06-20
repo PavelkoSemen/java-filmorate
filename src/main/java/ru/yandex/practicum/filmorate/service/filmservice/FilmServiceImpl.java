@@ -37,8 +37,8 @@ public class FilmServiceImpl implements FilmService {
         log.info("Получение фильма по id: {}", id);
 
         return filmRepository.get(id).orElseThrow(() -> new UnknownFilmException("Фильм не найден: " + id));
-
     }
+
 
     @Override
     public Film updateFilm(Film film) {
@@ -91,5 +91,13 @@ public class FilmServiceImpl implements FilmService {
     public List<Film> getAllFilms() {
         log.info("Получение фильмов");
         return filmRepository.getAll();
+    }
+
+    @Override
+    public Film deleteFilm(long id) {
+        log.info("Удаление фильма по id: {}:", id);
+        var film = getFilm(id);
+        filmRepository.delete(film);
+        return film;
     }
 }
