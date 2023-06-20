@@ -53,6 +53,7 @@ class FilmDeletingTests {
         testFilm.setMpa(mpa);
         filmStorage.save(testFilm);
     }
+
     private void checkFilm(Optional<Film> filmOpt) {
         var film = filmOpt.get();
         var date = LocalDate.parse("20230101", DateTimeFormatter.BASIC_ISO_DATE);
