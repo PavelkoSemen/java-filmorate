@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dao.UserRepository;
 import ru.yandex.practicum.filmorate.error.SaveUserException;
 import ru.yandex.practicum.filmorate.error.UnknownUserException;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.List;
@@ -80,5 +81,13 @@ public class UserServiceImpl implements UserService {
     public List<User> getAllUsers() {
         log.info("Получение пользователей");
         return userRepository.getAll();
+    }
+
+    @Override
+    public User deleteUser(long id) {
+        log.info("Удаление пользователя по id: {}:", id);
+        var user = getUser(id);
+        userRepository.delete(user);
+        return user;
     }
 }
