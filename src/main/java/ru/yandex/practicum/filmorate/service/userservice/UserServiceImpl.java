@@ -63,6 +63,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<User> getFriends(long id) {
+        getUser(id);
         return userRepository.getFriendsList(id);
     }
 
