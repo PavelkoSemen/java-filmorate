@@ -66,9 +66,7 @@ public class FilmServiceImpl implements FilmService {
 
     @Override
     public List<Film> getTopFilms(int count) {
-        return filmRepository.findTopFilms().stream()
-                .limit(count)
-                .collect(Collectors.toList());
+        return filmRepository.findTopFilmsWithLimit(count);
     }
 
     @Override

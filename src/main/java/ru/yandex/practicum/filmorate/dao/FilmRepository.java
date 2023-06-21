@@ -20,6 +20,7 @@ public interface FilmRepository {
 
     List<Film> findTopFilms();
 
+    List<Film> findTopFilmsWithLimit(int countFilms);
     List<Film> findTopFilmsByUserId(long userId);
 
     void delete(Film t);

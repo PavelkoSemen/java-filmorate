@@ -127,7 +127,7 @@ class FilmDeletingTests {
         filmStorage.putLike(2 + offset, 3);
         filmStorage.putLike(2 + offset, 2);
 
-        var films = filmStorage.findTopFilms(1);
+        var films = filmStorage.findTopFilmsWithLimit(1);
         checkFilm1(films.stream().findFirst());
     }
 }

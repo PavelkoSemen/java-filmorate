@@ -107,7 +107,7 @@ public class JdbcFilmRepository implements FilmRepository {
     @Override
     public List<Film> findTopFilmsWithLimit(int countFilms) {
         log.info("Вернуть топ {} фильмов", countFilms);
-        return jdbcTemplate.query(getTopFilms, this::extractData, countFilms);
+        return jdbcTemplate.query(getTopFilmsWithLimit, this::extractData, countFilms);
     }
 
     @Override

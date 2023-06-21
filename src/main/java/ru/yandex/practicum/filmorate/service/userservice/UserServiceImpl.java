@@ -63,7 +63,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<User> getFriends(long id) {
-        getUser(id);
+        userRepository.get(id).orElseThrow(() ->
+                new UnknownUserException("Пользователь не найден: " + id));
         return userRepository.getFriendsList(id);
     }
 
