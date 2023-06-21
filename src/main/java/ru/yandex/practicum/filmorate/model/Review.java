@@ -1,27 +1,49 @@
 package ru.yandex.practicum.filmorate.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-@Data
+import javax.validation.constraints.NotNull;
+
 @AllArgsConstructor
 @NoArgsConstructor
+@EqualsAndHashCode
+@ToString
 public class Review {
 
-    private long reviewId;
+    @Getter
+    @Setter
+    private Long reviewId;
+    @Getter
+    @Setter
+    @NotNull
     private String content;
-    private boolean isPositive;
-    private long userId;
-    private long filmId;
-    private Integer useful;
+    @NotNull
+    private Boolean isPositive;
+    @Getter
+    @Setter
+    @NotNull
+    private Long userId;
+    @Getter
+    @Setter
+    @NotNull
+    private Long filmId;
+    @Getter
+    @Setter
+    private Integer useful = 0;
 
-
-    public Review(long reviewId, String content, boolean isPositive, Integer userId, Integer filmId) {
+    public Review(Long reviewId, String content, Boolean isPositive, Long userId, Long filmId) {
         this.reviewId = reviewId;
         this.content = content;
         this.isPositive = isPositive;
         this.userId = userId;
         this.filmId = filmId;
+    }
+
+    public boolean getIsPositive() {
+        return isPositive;
+    }
+
+    public void setIsPositive(boolean isPositive) {
+        this.isPositive = isPositive;
     }
 }
