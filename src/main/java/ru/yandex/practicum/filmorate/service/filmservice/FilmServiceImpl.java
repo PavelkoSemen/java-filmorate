@@ -10,7 +10,9 @@ import ru.yandex.practicum.filmorate.error.UnknownFilmException;
 import ru.yandex.practicum.filmorate.error.UnknownUserException;
 import ru.yandex.practicum.filmorate.model.Film;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -64,7 +66,23 @@ public class FilmServiceImpl implements FilmService {
 
     @Override
     public List<Film> getTopFilms(int count) {
-        return filmRepository.findTopFilms(count);
+        return filmRepository.findTopFilmsWithLimit(count);
+    }
+
+    @Override
+    public List<Film> getMutualTopFilms(long userId, long friendId) {
+        log.info("Получение общих фильмов для пользователей {} {}", userId, friendId);
+        List<Film> mutualFilms = new ArrayList<>();
+
+        List<Film> filmsUser = filmRepository.findTopFilmsByUserId(userId);
+        List<Film> filmsFriend = filmRepository.findTopFilmsByUserId(friendId);
+
+        for (Film film : filmsUser) {
+            if (filmsFriend.contains(film)) {
+                mutualFilms.add(film);
+            }
+        }
+        return mutualFilms;
     }
 
     @Override

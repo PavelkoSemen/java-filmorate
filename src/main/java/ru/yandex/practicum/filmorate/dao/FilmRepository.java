@@ -18,7 +18,10 @@ public interface FilmRepository {
 
     void deleteLike(long filmId, long userId);
 
-    List<Film> findTopFilms(int countFilms);
+    List<Film> findTopFilms();
+
+    List<Film> findTopFilmsWithLimit(int countFilms);
+    List<Film> findTopFilmsByUserId(long userId);
 
     void delete(Film t);
 }

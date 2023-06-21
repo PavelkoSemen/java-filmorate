@@ -38,6 +38,7 @@ public class Film {
         this.description = description;
         this.releaseDate = releaseDate;
         this.duration = duration;
+        this.mpa = mpa;
     }
 
     public void addUser(User user) {

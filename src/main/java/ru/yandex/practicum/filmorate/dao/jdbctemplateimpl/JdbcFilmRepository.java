@@ -104,58 +104,30 @@ public class JdbcFilmRepository implements FilmRepository {
     }
 
     @Override
-    public List<Film> findTopFilms(int countFilms) {
+    public List<Film> findTopFilmsWithLimit(int countFilms) {
         log.info("Вернуть топ {} фильмов", countFilms);
-        SqlRowSet rows = jdbcTemplate.queryForRowSet(getTopFilms, countFilms);
-        var list = new HashMap<Long, Film>();
-        while (rows.next()) {
-            var filmId = rows.getLong("FILM_ID");
-            Film film = null;
-            if (list.containsKey(filmId)) {
-                film = list.get(filmId);
-                film.addGenre(createGenre(rows));
-                continue;
-            }
-            film = createFilm(rows);
-            list.put(filmId, film);
-        }
-        if (list.isEmpty())
-            return getAll();
-        return new ArrayList<>(list.values());
+        return jdbcTemplate.query(getTopFilmsWithLimit, this::extractData, countFilms);
     }
 
-    private Genre createGenre(SqlRowSet rs) {
-        log.info("Заполнение жанров");
-        Genre genre = new Genre();
-        genre.setId(rs.getLong("GENRE_ID"));
-        genre.setName(rs.getString("GENRE_NAME"));
-        return genre;
+    @Override
+    public List<Film> findTopFilms() {
+        log.info("Вернуть топ фильмов");
+        return jdbcTemplate.query(getTopFilms, this::extractData);
     }
 
-    private Film createFilm(SqlRowSet rs) {
-        log.info("Заполнение фильма");
-        Film film = new Film();
-        film.setId(rs.getLong("FILM_ID"));
-        film.setName(rs.getString("NAME"));
-        film.setDescription(rs.getString("DESCRIPTION"));
-        film.setDuration(rs.getInt("DURATION"));
-        film.setReleaseDate(rs.getDate("RELEASE").toLocalDate());
-        Mpa mpa = new Mpa();
-        mpa.setId(rs.getLong("MPA_ID"));
-        mpa.setName(rs.getString("MPA_NAME"));
-        mpa.setDescription(rs.getString("MPA_DESCRIPTION"));
-        film.setMpa(mpa);
-        film.addGenre(createGenre(rs));
-        return film;
+    @Override
+    public List<Film> findTopFilmsByUserId(long userId) {
+        log.info("Вернуть топ фильмов для пользователя {}", userId);
+        return jdbcTemplate.query(getTopFilmsByUserId, this::extractData, userId);
     }
-
+  
     @Override
     public void delete(Film film) {
         log.info("Удаление фильма: {}", film);
         jdbcTemplate.update(deleteFilm, film.getId());
         log.info("Фильма {} удален", film);
     }
-
+  
     private void insertGenres(Film film) {
         List<Long> genresId = film.getGenres().stream()
                 .map(Genre::getId)
