@@ -118,4 +118,16 @@ class FilmDeletingTests {
         var films = filmStorage.getAll();
         checkFilm1(films.stream().skip(offset).findFirst());
     }
+
+    @Test
+    void topFilmsTest() {
+        createFilm();
+        createFilm1();
+        filmStorage.putLike(1 + offset, 1);
+        filmStorage.putLike(2 + offset, 3);
+        filmStorage.putLike(2 + offset, 2);
+
+        var films = filmStorage.findTopFilms(1);
+        checkFilm1(films.stream().findFirst());
+    }
 }

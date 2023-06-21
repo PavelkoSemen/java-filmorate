@@ -7,6 +7,7 @@ import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.dao.FilmRepository;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -17,9 +18,7 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static ru.yandex.practicum.filmorate.utils.FilmsSQL.*;
@@ -107,7 +106,47 @@ public class JdbcFilmRepository implements FilmRepository {
     @Override
     public List<Film> findTopFilms(int countFilms) {
         log.info("Вернуть топ {} фильмов", countFilms);
-        return jdbcTemplate.query(getTopFilms, this::extractData, countFilms);
+        SqlRowSet rows = jdbcTemplate.queryForRowSet(getTopFilms, countFilms);
+        var list = new HashMap<Long, Film>();
+        while (rows.next()) {
+            var filmId = rows.getLong("FILM_ID");
+            Film film = null;
+            if (list.containsKey(filmId)) {
+                film = list.get(filmId);
+                film.addGenre(createGenre(rows));
+                continue;
+            }
+            film = createFilm(rows);
+            list.put(filmId, film);
+        }
+        if (list.isEmpty())
+            return getAll();
+        return new ArrayList<>(list.values());
+    }
+
+    private Genre createGenre(SqlRowSet rs) {
+        log.info("Заполнение жанров");
+        Genre genre = new Genre();
+        genre.setId(rs.getLong("GENRE_ID"));
+        genre.setName(rs.getString("GENRE_NAME"));
+        return genre;
+    }
+
+    private Film createFilm(SqlRowSet rs) {
+        log.info("Заполнение фильма");
+        Film film = new Film();
+        film.setId(rs.getLong("FILM_ID"));
+        film.setName(rs.getString("NAME"));
+        film.setDescription(rs.getString("DESCRIPTION"));
+        film.setDuration(rs.getInt("DURATION"));
+        film.setReleaseDate(rs.getDate("RELEASE").toLocalDate());
+        Mpa mpa = new Mpa();
+        mpa.setId(rs.getLong("MPA_ID"));
+        mpa.setName(rs.getString("MPA_NAME"));
+        mpa.setDescription(rs.getString("MPA_DESCRIPTION"));
+        film.setMpa(mpa);
+        film.addGenre(createGenre(rs));
+        return film;
     }
 
     @Override
