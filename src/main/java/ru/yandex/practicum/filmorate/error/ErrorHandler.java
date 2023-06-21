@@ -81,7 +81,7 @@ public class ErrorHandler {
 
     @ExceptionHandler(UnknownReviewException.class)
     @ResponseStatus(value = HttpStatus.NOT_FOUND)
-    public ErrorMessage UnknownReviewException(UnknownReviewException ex, WebRequest request) {
+    public ErrorMessage unknownReviewException(UnknownReviewException ex, WebRequest request) {
         log.error(ex.getMessage());
         return new ErrorMessage(
                 HttpStatus.NOT_FOUND.value(),
