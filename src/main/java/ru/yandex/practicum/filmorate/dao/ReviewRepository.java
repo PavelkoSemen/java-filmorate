@@ -13,6 +13,7 @@ public interface ReviewRepository {
     Review save(Review review);
 
     Review update(Review review);
+
     void delete(Long reviewId);
 
     void putLike(Long reviewId, Long userId);
@@ -24,6 +25,8 @@ public interface ReviewRepository {
     void deleteDislike(Long reviewId, Long userId);
 
     boolean containsKey(Long reviewId);
+
     boolean containsFilm(Long filmId);
+
     boolean containsUser(Long userId);
 }
