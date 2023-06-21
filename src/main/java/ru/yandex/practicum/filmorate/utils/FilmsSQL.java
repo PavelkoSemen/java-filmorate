@@ -42,13 +42,10 @@ public final class FilmsSQL {
             "     , m.*\n" +
             "     , g.*\n" +
             "FROM films f\n" +
-            "         JOIN (SELECT f1.FILM_ID\n" +
-            "                    FROM films f1\n" +
-            "                    LEFT JOIN (SELECT film_id, COUNT(user_id) as count_likes\n" +
+            "         LEFT JOIN (SELECT film_id\n" +
+            "                         , COUNT(user_id) as count_likes\n" +
             "                    FROM likes\n" +
-            "                    GROUP BY film_id) cf1 ON cf1.film_id = f1.film_id\n" +
-            "                         ORDER BY count_likes DESC\n" +
-            "                         LIMIT ?) cf\n" +
+            "                    GROUP BY film_id) cf\n" +
             "                   ON cf.film_id = f.film_id\n" +
             joinFilmAttribute +
             "ORDER BY count_likes desc";
