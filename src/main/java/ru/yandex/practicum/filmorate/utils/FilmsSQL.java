@@ -58,7 +58,9 @@ public final class FilmsSQL {
             "                         , COUNT(user_id) as count_likes\n" +
             "                    FROM likes\n" +
             "                    GROUP BY film_id) cf\n" +
-            "                   ON cf.film_id = f.film_id and user_id = ?\n" +
+            "                   ON cf.film_id = f.film_id\n" +
+            "         JOIN likes l\n" +
+            "                   ON f.film_id = l.film_id AND user_id = ?\n" +
             joinFilmAttribute +
             "ORDER BY count_likes desc";
 
