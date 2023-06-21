@@ -57,7 +57,7 @@ public class FilmController {
     public List<Film> getMutualTopFilms(@RequestParam int userId, @RequestParam int friendId) {
         return filmService.getMutualTopFilms(userId, friendId);
     }
-
+  
     @DeleteMapping(path = "/films/{filmId}")
     public Film deleteFilm(@PathVariable long filmId) {
         return filmService.deleteFilm(filmId);

@@ -7,6 +7,7 @@ import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.dao.FilmRepository;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -17,9 +18,7 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static ru.yandex.practicum.filmorate.utils.FilmsSQL.*;
@@ -121,14 +120,14 @@ public class JdbcFilmRepository implements FilmRepository {
         log.info("Вернуть топ фильмов для пользователя {}", userId);
         return jdbcTemplate.query(getTopFilmsByUserId, this::extractData, userId);
     }
-
+  
     @Override
     public void delete(Film film) {
         log.info("Удаление фильма: {}", film);
         jdbcTemplate.update(deleteFilm, film.getId());
         log.info("Фильма {} удален", film);
     }
-
+  
     private void insertGenres(Film film) {
         List<Long> genresId = film.getGenres().stream()
                 .map(Genre::getId)
