@@ -52,4 +52,9 @@ public class FilmController {
     public List<Film> getTopFilms(@RequestParam(defaultValue = "10") int count) {
         return filmService.getTopFilms(count);
     }
+
+    @DeleteMapping(path = "/films/{filmId}")
+    public Film deleteFilm(@PathVariable long filmId) {
+        return filmService.deleteFilm(filmId);
+    }
 }

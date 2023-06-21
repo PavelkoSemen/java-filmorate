@@ -63,6 +63,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<User> getFriends(long id) {
+        getUser(id);
         return userRepository.getFriendsList(id);
     }
 
@@ -80,5 +81,13 @@ public class UserServiceImpl implements UserService {
     public List<User> getAllUsers() {
         log.info("Получение пользователей");
         return userRepository.getAll();
+    }
+
+    @Override
+    public User deleteUser(long id) {
+        log.info("Удаление пользователя по id: {}:", id);
+        var user = getUser(id);
+        userRepository.delete(user);
+        return user;
     }
 }

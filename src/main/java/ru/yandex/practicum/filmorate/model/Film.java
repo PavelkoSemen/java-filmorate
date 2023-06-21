@@ -51,6 +51,8 @@ public class Film {
     }
 
     public void addGenre(Genre genre) {
+        if (genre.getId() == 0)
+            return;
         genres.add(genre);
     }
 
