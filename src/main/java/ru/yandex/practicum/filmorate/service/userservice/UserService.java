@@ -1,8 +1,10 @@
 package ru.yandex.practicum.filmorate.service.userservice;
 
 
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 
+import java.util.Collection;
 import java.util.List;
 
 public interface UserService {
@@ -23,4 +25,6 @@ public interface UserService {
     List<User> getAllUsers();
 
     User deleteUser(long id);
+
+    Collection<Film> getRecommendations(long id);
 }

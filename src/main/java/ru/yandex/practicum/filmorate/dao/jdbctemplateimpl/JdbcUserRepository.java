@@ -8,12 +8,14 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.dao.UserRepository;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -110,6 +112,16 @@ public class JdbcUserRepository implements UserRepository {
         log.info("Удаление пользователя: {}", user);
         jdbcTemplate.update(deleteUser, user.getId());
         log.info("Пользователь {} удален", user);
+    }
+
+    @Override
+    public Collection<Film> getRecommendations(long id) {
+        try {
+            return jdbcTemplate.query(queryFilmsRecommendations, JdbcFilmRepository::extractFilmData, id, id);
+        } catch (Exception ex) {
+            int a = 1;
+            return null;
+        }
     }
 
     private User extractData(ResultSet rs, int rowNum) throws SQLException {
