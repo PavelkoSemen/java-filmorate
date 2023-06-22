@@ -33,6 +33,7 @@ public final class FilmsSQL {
     public static final String getTopFilmsWithLimit = "SELECT f.*\n" +
             "     , m.*\n" +
             "     , g.*\n" +
+            "     , d.*\n" +
             "FROM films f\n" +
             "         JOIN (SELECT f1.FILM_ID\n" +
             "                    FROM films f1\n" +
@@ -49,20 +50,18 @@ public final class FilmsSQL {
             "     , g.*\n" +
             "     , d.*\n" +
             "FROM films f\n" +
-            "         JOIN (SELECT f1.FILM_ID\n" +
-            "                    FROM films f1\n" +
-            "                    LEFT JOIN (SELECT film_id, COUNT(user_id) as count_likes\n" +
+            "         LEFT JOIN (SELECT film_id\n" +
+            "                         , COUNT(user_id) as count_likes\n" +
             "                    FROM likes\n" +
-            "                    GROUP BY film_id) cf1 ON cf1.film_id = f1.film_id\n" +
-            "                         ORDER BY count_likes DESC\n" +
-            "                         LIMIT ?) cf\n" +
+            "                    GROUP BY film_id) cf\n" +
             "                   ON cf.film_id = f.film_id\n" +
             joinFilmAttribute +
-            "ORDER BY count_likes desc";
+            " ORDER BY cf.count_likes desc";
 
     public static final String getTopFilmsByUserId = "SELECT f.*\n" +
             "     , m.*\n" +
             "     , g.*\n" +
+            "     , d.*\n" +
             "FROM films f\n" +
             "         LEFT JOIN (SELECT film_id\n" +
             "                         , COUNT(user_id) as count_likes\n" +
@@ -72,7 +71,7 @@ public final class FilmsSQL {
             "         JOIN likes l\n" +
             "                   ON f.film_id = l.film_id AND user_id = ?\n" +
             joinFilmAttribute +
-            "ORDER BY count_likes desc";
+            " ORDER BY count_likes desc";
 
     public static final String insertIntoFilm = "INSERT INTO films(name, description, release, duration, mpa_id)\n" +
             "VALUES (?, ?, ?, ?, ?)";
@@ -89,4 +88,35 @@ public final class FilmsSQL {
     public static final String insertIntoLikes = "INSERT INTO likes(film_id, user_id)\n" +
             "VALUES (?, ?)";
     public static final String deleteLikes = "DELETE FROM likes WHERE film_id = ? AND user_id = ?";
+
+    public static final String queryGetFilmsByDirectorWithoutSort = "SELECT f.*\n" +
+            "     , m.*\n" +
+            "     , g.*\n" +
+            "     , d.*\n" +
+            "FROM films f\n" +
+            joinFilmAttribute +
+            " WHERE fd.director_id = ?";
+
+    public static final String queryGetFilmsByDirectorLikeSort = "SELECT f.*\n" +
+            "     , m.*\n" +
+            "     , g.*\n" +
+            "     , d.*\n" +
+            "FROM films f\n" +
+            "         LEFT JOIN (SELECT film_id\n" +
+            "                         , COUNT(user_id) as count_likes\n" +
+            "                    FROM likes\n" +
+            "                    GROUP BY film_id) cf\n" +
+            "                   ON cf.film_id = f.film_id\n" +
+                                joinFilmAttribute +
+            " WHERE fd.director_id = ?\n" +
+            "ORDER BY cf.count_likes desc";
+
+    public static final String queryGetFilmsByDirectorYearSort = "SELECT f.*\n" +
+            "     , m.*\n" +
+            "     , g.*\n" +
+            "     , d.*\n" +
+            "FROM films f\n" +
+                    joinFilmAttribute +
+            " WHERE fd.director_id = ?\n" +
+            "ORDER BY f.release";
 }

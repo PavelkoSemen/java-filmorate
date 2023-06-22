@@ -23,5 +23,7 @@ public interface FilmRepository {
     List<Film> findTopFilmsWithLimit(int countFilms);
     List<Film> findTopFilmsByUserId(long userId);
 
+    List<Film> getFilmsByDirector(long directorId, String sortBy);
+
     void delete(Film t);
 }

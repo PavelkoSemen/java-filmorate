@@ -7,9 +7,9 @@ import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.dao.FilmRepository;
+import ru.yandex.practicum.filmorate.error.UnknownFilmException;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
@@ -124,14 +124,35 @@ public class JdbcFilmRepository implements FilmRepository {
         log.info("Вернуть топ фильмов для пользователя {}", userId);
         return jdbcTemplate.query(getTopFilmsByUserId, this::extractData, userId);
     }
-  
+
+    public List<Film> getFilmsByDirector(long directorId, String sortBy) {
+        log.info("Вернуть фильмы режиссера с id {}. Дополнительное условие {}", directorId, sortBy);
+        List<Film> list;
+        switch (sortBy) {
+            case("likes"):
+                list = new LinkedList<>(Objects.requireNonNull(jdbcTemplate
+                    .query(queryGetFilmsByDirectorLikeSort, this::extractData, directorId)));
+                break;
+            case("year"):
+                list = new LinkedList<>(Objects.requireNonNull(jdbcTemplate
+                    .query(queryGetFilmsByDirectorYearSort, this::extractData, directorId)));
+                break;
+            default: list = new LinkedList<>(Objects.requireNonNull(jdbcTemplate
+                    .query(queryGetFilmsByDirectorWithoutSort, this::extractData, directorId)));
+        }
+        if (list.size() == 0) {
+            throw new UnknownFilmException("У режиссера с id: " + directorId + " нет фильмов");
+        }
+        return list;
+    }
+
     @Override
     public void delete(Film film) {
         log.info("Удаление фильма: {}", film);
         jdbcTemplate.update(deleteFilm, film.getId());
         log.info("Фильма {} удален", film);
     }
-  
+
     private void insertGenres(Film film) {
         List<Long> genresId = film.getGenres().stream()
                 .map(Genre::getId)

@@ -4,8 +4,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dao.DirectorRepository;
-import ru.yandex.practicum.filmorate.error.UnknownFilmException;
+import ru.yandex.practicum.filmorate.error.SaveDirectorException;
+import ru.yandex.practicum.filmorate.error.UnknownDirectorException;
 import ru.yandex.practicum.filmorate.model.Director;
+
+import java.util.List;
 
 @Slf4j
 @Service
@@ -17,9 +20,31 @@ public class DirectorServiceImpl implements DirectorService {
         this.directorRepository = directorRepository;
     }
 
-    public Director addFilmDirector(long filmId, Director director) {
-        log.info("Добавление режиссера к фильму с id: {}", filmId);
-        return directorRepository.addFilmDirector(filmId, director)
-                .orElseThrow(() -> new UnknownFilmException("Фильм не найден: " + filmId));
+    public Director getDirector(long id) {
+        log.info("Получение режиссера с с id: {}", id);
+        return directorRepository.getDirector(id)
+                .orElseThrow(() -> new UnknownDirectorException("Режиссер не найден: " + id));
+    }
+
+    public Director createDirector(Director director) {
+        log.info("Создание режиссера {}", director);
+        return directorRepository.createDirector(director)
+                .orElseThrow(() -> new SaveDirectorException("Режиссер не сохранен: " + director));
+    }
+
+    public Director updateDirector(Director director) {
+        log.info("Обновление режиссера с id: {}", director.getId());
+        return directorRepository.updateDirector(director)
+                .orElseThrow(() -> new UnknownDirectorException("Режиссер не найден: " + director.getId()));
+    }
+
+    public void deleteDirector(long id) {
+        log.info("Удаление режиссера с id: {}", id);
+        directorRepository.deleteDirector(id);
+    }
+
+    public List<Director> getAllDirectors() {
+        log.info("Получение всех режиссеров");
+        return directorRepository.getAllDirectors();
     }
 }

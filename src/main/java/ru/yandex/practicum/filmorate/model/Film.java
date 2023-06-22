@@ -31,7 +31,7 @@ public class Film {
     private Set<User> users = new HashSet<>();
     private Mpa mpa;
     private Set<Genre> genres = new TreeSet<>();
-    private Set<Director> directors = new HashSet<>();
+    private Set<Director> directors = new TreeSet<>();
 
     public Film(long id, String name, String description, LocalDate releaseDate, int duration, Mpa mpa) {
         this.id = id;
