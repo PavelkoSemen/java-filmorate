@@ -60,11 +60,12 @@ class FilmRepositoryTest {
     @Test
     @DisplayName("Должен сохранить и вернуть фильм")
     void shouldSaveAndReturnFilm() {
+        long nextId = filmRepository.getAll().size();
         Optional<Film> optionalFilm = filmRepository.save(firstFilm);
         assertThat(optionalFilm)
                 .isPresent()
                 .hasValueSatisfying(film ->
-                        assertThat(film).hasFieldOrPropertyWithValue("id", 4L));
+                        assertThat(film).hasFieldOrPropertyWithValue("id", nextId + 1L));
     }
 
     @Test
