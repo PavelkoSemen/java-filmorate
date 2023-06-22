@@ -23,41 +23,30 @@ public class ReviewService {
         Проверяем наличие объектов в базе
      */
     public boolean isValidReviewId(Long reviewId) {
-        if (!reviewRepository.containsKey(reviewId)) {
-            throw new UnknownReviewException("Отзыв не найден: " + reviewId);
-        } else {
-            return true;
-        }
+
+        return reviewRepository.containsKey(reviewId);
     }
 
     public boolean isValidFilmId(Long filmId) {
 
-        if (!reviewRepository.containsFilm(filmId)) {
-            throw new UnknownReviewException("Фильм не найден: " + filmId);
-        }
-        return true;
+        return reviewRepository.containsFilm(filmId);
     }
 
     public boolean isValidUserId(Long userId) {
 
-        if (!reviewRepository.containsUser(userId) || (userId < 0)) {
-            throw new UnknownReviewException("Юзер не найден: " + userId);
-        }
-        return true;
+        return reviewRepository.containsUser(userId);
     }
 
     public boolean isValidReview(Review review) {
 
-        Long filmId = review.getFilmId();
-        Long userId = review.getUserId();
-
-        return isValidFilmId(filmId) && isValidUserId(userId);
+        return isValidFilmId(review.getFilmId()) && isValidUserId(review.getUserId());
     }
 
     /*
         Методы для работы с базой отзывов
      */
     public List<Review> getAll(Long filmId, Integer count) {
+
         return reviewRepository.getAll(filmId, count).stream()
                 .sorted((r0, r1) -> {
                     int comp = r1.getUseful().compareTo(r0.getUseful()); //сортировка по useful DESC
@@ -73,14 +62,18 @@ public class ReviewService {
 
         if (isValidReview(review)) {
             return reviewRepository.save(review);
-        } else return null;
+        } else {
+            throw new UnknownReviewException("Некорректные параметры запроса: " + review);
+        }
     }
 
     public Review updateReview(Review review) {
 
         if (isValidReviewId(review.getReviewId()) && isValidReview(review)) {
             return reviewRepository.update(review);
-        } else return null;
+        } else {
+            throw new UnknownReviewException("Некорректные параметры запроса: " + review);
+        }
 
     }
 
@@ -89,7 +82,7 @@ public class ReviewService {
         if (isValidReviewId(reviewId)) {
             return reviewRepository.get(reviewId);
         } else {
-            return null;
+            throw new UnknownReviewException("Некорректные параметры запроса: " + reviewId);
         }
     }
 
@@ -97,6 +90,8 @@ public class ReviewService {
 
         if (isValidReviewId(reviewId)) {
             reviewRepository.delete(reviewId);
+        } else {
+            throw new UnknownReviewException("Некорректные параметры запроса: " + reviewId);
         }
     }
 
@@ -107,6 +102,8 @@ public class ReviewService {
 
         if (isValidReviewId(reviewId) && isValidUserId(userId)) {
             reviewRepository.putLike(reviewId, userId);
+        } else {
+            throw new UnknownReviewException("Некорректные параметры запроса: " + reviewId + ", " + userId);
         }
     }
 
@@ -114,6 +111,8 @@ public class ReviewService {
 
         if (isValidReviewId(reviewId) && isValidUserId(userId)) {
             reviewRepository.putDislike(reviewId, userId);
+        } else {
+            throw new UnknownReviewException("Некорректные параметры запроса: " + reviewId + ", " + userId);
         }
     }
 
@@ -121,6 +120,8 @@ public class ReviewService {
 
         if (isValidReviewId(reviewId) && isValidUserId(userId)) {
             reviewRepository.deleteLike(reviewId, userId);
+        } else {
+            throw new UnknownReviewException("Некорректные параметры запроса: " + reviewId + ", " + userId);
         }
     }
 
@@ -128,6 +129,8 @@ public class ReviewService {
 
         if (isValidReviewId(reviewId) && isValidUserId(userId)) {
             reviewRepository.deleteDislike(reviewId, userId);
+        } else {
+            throw new UnknownReviewException("Некорректные параметры запроса: " + reviewId + ", " + userId);
         }
     }
 }

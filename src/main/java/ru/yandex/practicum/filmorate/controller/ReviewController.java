@@ -92,6 +92,4 @@ public class ReviewController {
 
         reviewService.removeDislikeFromUser(reviewId, userId);
     }
-
-
 }
