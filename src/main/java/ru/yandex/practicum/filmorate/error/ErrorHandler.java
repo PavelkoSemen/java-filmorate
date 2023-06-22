@@ -79,6 +79,17 @@ public class ErrorHandler {
                 request.getDescription(false));
     }
 
+    @ExceptionHandler(UnknownReviewException.class)
+    @ResponseStatus(value = HttpStatus.NOT_FOUND)
+    public ErrorMessage unknownReviewException(UnknownReviewException ex, WebRequest request) {
+        log.error(ex.getMessage());
+        return new ErrorMessage(
+                HttpStatus.NOT_FOUND.value(),
+                new Date(),
+                ex.getMessage(),
+                request.getDescription(false));
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
     public ErrorMessage methodArgumentNotValidException(MethodArgumentNotValidException ex, WebRequest request) {
