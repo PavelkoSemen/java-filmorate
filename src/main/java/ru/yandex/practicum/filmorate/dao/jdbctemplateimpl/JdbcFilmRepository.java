@@ -192,9 +192,11 @@ public class JdbcFilmRepository implements FilmRepository {
             });
         }
     }
+
     private List<Film> extractData(ResultSet rs) throws SQLException {
         return extractFilmData(rs);
     }
+
     public static List<Film> extractFilmData(ResultSet rs) throws SQLException {
         List<Film> list = new ArrayList<>();
         Film currentFilm = new Film();

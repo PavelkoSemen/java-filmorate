@@ -42,9 +42,9 @@ public final class UsersSQL {
             "  FROM LIKES likes\n" +
             "      INNER JOIN (\n" +
             "        SELECT peopleLikes.user_id AS userWithSameLikes\n" +
-            "        FROM LIKES AS userLikes, LIKES AS peopleLikes  \n" +
-            "        WHERE userLikes.film_id = peopleLikes.film_id  \n" +
-            "        AND userLikes.USER_ID <> peopleLikes.USER_ID AND userLikes.USER_ID = ?   \n" +
+            "        FROM LIKES AS userLikes, LIKES AS peopleLikes \n" +
+            "        WHERE userLikes.film_id = peopleLikes.film_id \n" +
+            "        AND userLikes.USER_ID <> peopleLikes.USER_ID AND userLikes.USER_ID = ? \n" +
             "        GROUP BY peopleLikes.user_id  \n" +
             "        ORDER BY count(*) DESC limit 10) \n" +
             "        usersWithSameLikes ON usersWithSameLikes.userWithSameLikes = likes.USER_ID\n" +

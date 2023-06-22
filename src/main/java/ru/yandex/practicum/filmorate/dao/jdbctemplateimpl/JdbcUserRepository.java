@@ -116,12 +116,7 @@ public class JdbcUserRepository implements UserRepository {
 
     @Override
     public Collection<Film> getRecommendations(long id) {
-        try {
-            return jdbcTemplate.query(queryFilmsRecommendations, JdbcFilmRepository::extractFilmData, id, id);
-        } catch (Exception ex) {
-            int a = 1;
-            return null;
-        }
+        return jdbcTemplate.query(queryFilmsRecommendations, JdbcFilmRepository::extractFilmData, id, id);
     }
 
     private User extractData(ResultSet rs, int rowNum) throws SQLException {
