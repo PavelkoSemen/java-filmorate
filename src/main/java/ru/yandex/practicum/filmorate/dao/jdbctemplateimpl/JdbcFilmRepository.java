@@ -62,6 +62,7 @@ public class JdbcFilmRepository implements FilmRepository {
                 case "director":
                     concatQuery = concatQuery + andOrOr + " LOWER(d.director_name) LIKE '%" + query.toLowerCase() + "%'";
                     break;
+
             }
         }
 
