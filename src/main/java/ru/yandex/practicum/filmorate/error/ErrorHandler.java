@@ -100,4 +100,26 @@ public class ErrorHandler {
                 ex.getMessage(),
                 request.getDescription(false));
     }
+
+    @ExceptionHandler(SaveDirectorException.class)
+    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
+    public ErrorMessage saveDirectorException(SaveDirectorException ex, WebRequest request) {
+        log.error(ex.getMessage());
+        return new ErrorMessage(
+                HttpStatus.BAD_REQUEST.value(),
+                new Date(),
+                ex.getMessage(),
+                request.getDescription(false));
+    }
+
+    @ExceptionHandler(UnknownDirectorException.class)
+    @ResponseStatus(value = HttpStatus.NOT_FOUND)
+    public ErrorMessage unknownDirectorException(UnknownDirectorException ex, WebRequest request) {
+        log.error(ex.getMessage());
+        return new ErrorMessage(
+                HttpStatus.NOT_FOUND.value(),
+                new Date(),
+                ex.getMessage(),
+                request.getDescription(false));
+    }
 }

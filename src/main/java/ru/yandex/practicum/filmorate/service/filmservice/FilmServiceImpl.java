@@ -12,7 +12,6 @@ import ru.yandex.practicum.filmorate.model.Film;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -97,5 +96,11 @@ public class FilmServiceImpl implements FilmService {
         var film = getFilm(id);
         filmRepository.delete(film);
         return film;
+    }
+
+    @Override
+    public List<Film> getFilmsByDirector(long directorId, String sortBy) {
+        log.info("Получение всех фильмов от режиссера с id: {}. Дополнительное условие {}", directorId, sortBy);
+        return filmRepository.getFilmsByDirector(directorId, sortBy);
     }
 }
