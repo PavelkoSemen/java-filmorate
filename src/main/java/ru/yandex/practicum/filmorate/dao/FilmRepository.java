@@ -27,4 +27,6 @@ public interface FilmRepository {
     List<Film> getFilmsByDirector(long directorId, String sortBy);
 
     void delete(Film t);
+
+    List<Film> search(String query, String by);
 }

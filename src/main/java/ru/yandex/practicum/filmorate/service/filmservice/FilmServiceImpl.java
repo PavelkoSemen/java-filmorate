@@ -99,6 +99,11 @@ public class FilmServiceImpl implements FilmService {
     }
 
     @Override
+    public List<Film> search(String query, String by) {
+        return filmRepository.search(query, by);
+    }
+
+    @Override
     public List<Film> getFilmsByDirector(long directorId, String sortBy) {
         log.info("Получение всех фильмов от режиссера с id: {}. Дополнительное условие {}", directorId, sortBy);
         return filmRepository.getFilmsByDirector(directorId, sortBy);

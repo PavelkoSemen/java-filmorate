@@ -49,6 +49,27 @@ public class JdbcFilmRepository implements FilmRepository {
     }
 
     @Override
+    public List<Film> search(String query, String by) {
+        List<String> splitBy = Arrays.asList(by.split(","));
+        String concatQuery = "";
+
+        for (String s : splitBy) {
+            String andOrOr = concatQuery.length() == 0 ? " AND " : " OR ";
+            switch (s) {
+                case "title":
+                    concatQuery = concatQuery + andOrOr + " LOWER(f.name) LIKE '%" + query.toLowerCase() + "%'";
+                    break;
+                case "director":
+                    concatQuery = concatQuery + andOrOr + " LOWER(d.director_name) LIKE '%" + query.toLowerCase() + "%'";
+                    break;
+            }
+        }
+
+        String resultQuery = queryMainSearch + concatQuery + " ORDER BY f.film_id DESC";
+        return jdbcTemplate.query(resultQuery, this::extractData);
+    }
+
+    @Override
     public Optional<Film> save(Film film) {
         log.info("Сохранение фильма: {}", film);
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -129,16 +150,17 @@ public class JdbcFilmRepository implements FilmRepository {
         log.info("Вернуть фильмы режиссера с id {}. Дополнительное условие {}", directorId, sortBy);
         List<Film> list;
         switch (sortBy) {
-            case("likes"):
+            case ("likes"):
                 list = new LinkedList<>(Objects.requireNonNull(jdbcTemplate
-                    .query(queryGetFilmsByDirectorLikeSort, this::extractData, directorId)));
+                        .query(queryGetFilmsByDirectorLikeSort, this::extractData, directorId)));
                 break;
-            case("year"):
+            case ("year"):
                 list = new LinkedList<>(Objects.requireNonNull(jdbcTemplate
-                    .query(queryGetFilmsByDirectorYearSort, this::extractData, directorId)));
+                        .query(queryGetFilmsByDirectorYearSort, this::extractData, directorId)));
                 break;
-            default: list = new LinkedList<>(Objects.requireNonNull(jdbcTemplate
-                    .query(queryGetFilmsByDirectorWithoutSort, this::extractData, directorId)));
+            default:
+                list = new LinkedList<>(Objects.requireNonNull(jdbcTemplate
+                        .query(queryGetFilmsByDirectorWithoutSort, this::extractData, directorId)));
         }
         if (list.size() == 0) {
             throw new UnknownFilmException("У режиссера с id: " + directorId + " нет фильмов");

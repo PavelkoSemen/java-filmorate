@@ -146,4 +146,13 @@ class FilmRepositoryTest {
         List<Film> topFilmsSecond = filmRepository.findTopFilmsByUserId(2);
         assertThat(topFilmsSecond).isEmpty();
     }
+    @Test
+    @DisplayName("Должен вернуть список с одним фильмом")
+    void shouldReturnListWithFilm() {
+        String query = "ame";
+        String by = "title";
+        filmRepository.save(firstFilm);
+        List<Film> films = filmRepository.search(query, by);
+        assertThat(films).hasSize(1);
+    }
 }
