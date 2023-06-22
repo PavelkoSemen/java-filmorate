@@ -39,6 +39,7 @@ public class Film {
         this.description = description;
         this.releaseDate = releaseDate;
         this.duration = duration;
+        this.mpa = mpa;
     }
 
     public void addUser(User user) {
@@ -52,6 +53,8 @@ public class Film {
     }
 
     public void addGenre(Genre genre) {
+        if (genre.getId() == 0)
+            return;
         genres.add(genre);
     }
 
