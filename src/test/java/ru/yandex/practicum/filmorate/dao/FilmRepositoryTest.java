@@ -60,7 +60,7 @@ class FilmRepositoryTest {
     @Test
     @DisplayName("Должен сохранить и вернуть фильм")
     void shouldSaveAndReturnFilm() {
-        long nextId = filmRepository.getAll().size();
+        long nextId = filmRepository.getAll().get(filmRepository.getAll().size() - 1).getId();
         Optional<Film> optionalFilm = filmRepository.save(firstFilm);
         assertThat(optionalFilm)
                 .isPresent()
