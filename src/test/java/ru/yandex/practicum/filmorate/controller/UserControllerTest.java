@@ -38,8 +38,7 @@ class UserControllerTest {
     private MockMvc mvc;
 
     @MockBean
-    private UserService service;
-
+    private UserService userService;
     @Autowired
     private ObjectMapper objectMapper;
 
@@ -76,7 +75,7 @@ class UserControllerTest {
     @DisplayName("Должен создать пользователя и вернуть его обратно")
     @Test
     public void shouldCreateAUserAndBringItBack() throws Exception {
-        given(service.createUser(firstUser)).willReturn(firstUser);
+        given(userService.createUser(firstUser)).willReturn(firstUser);
 
         mvc.perform(post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -85,14 +84,14 @@ class UserControllerTest {
                 .andExpect(content().json(objectMapper.writeValueAsString(firstUser)))
                 .andDo(print());
 
-        verify(service, times(1)).createUser(firstUser);
+        verify(userService, times(1)).createUser(firstUser);
     }
 
     @Test
     @DisplayName("Должен обновить и вернуть пользователя")
     public void shouldUpdateAndReturnUser() throws Exception {
 
-        given(service.updateUser(firstUser)).willReturn(firstUser);
+        given(userService.updateUser(firstUser)).willReturn(firstUser);
 
         mvc.perform(put("/users").contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(firstUser)))
@@ -100,21 +99,21 @@ class UserControllerTest {
                 .andExpect(content().json(objectMapper.writeValueAsString(firstUser)))
                 .andDo(print());
 
-        verify(service, times(1)).updateUser(firstUser);
+        verify(userService, times(1)).updateUser(firstUser);
     }
 
     @Test
     @DisplayName("Должен вернуть статус 404, при попытки обновить не существующего пользователя")
     public void shouldReturnNotFoundUpdateUser() throws Exception {
 
-        given(service.updateUser(firstUser)).willThrow(new UnknownUserException());
+        given(userService.updateUser(firstUser)).willThrow(new UnknownUserException());
 
         mvc.perform(put("/users").contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(firstUser)))
                 .andExpect(status().isNotFound())
                 .andDo(print());
 
-        verify(service, times(1)).updateUser(firstUser);
+        verify(userService, times(1)).updateUser(firstUser);
     }
 
     @Test
@@ -125,7 +124,7 @@ class UserControllerTest {
 
         List<User> allUsers = Arrays.asList(firstUser, secondUser);
 
-        given(service.getAllUsers()).willReturn(allUsers);
+        given(userService.getAllUsers()).willReturn(allUsers);
 
         mvc.perform(get("/users")
                         .contentType(MediaType.APPLICATION_JSON))
@@ -134,7 +133,7 @@ class UserControllerTest {
                 .andExpect(jsonPath("$[0].id").value(firstUser.getId()))
                 .andExpect(jsonPath("$[1].id").value(secondUser.getId()))
                 .andDo(print());
-        verify(service, times(1)).getAllUsers();
+        verify(userService, times(1)).getAllUsers();
     }
 
 

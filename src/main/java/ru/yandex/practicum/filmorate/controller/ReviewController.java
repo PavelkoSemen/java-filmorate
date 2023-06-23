@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Review;
 import ru.yandex.practicum.filmorate.service.reviewservice.ReviewService;
+import ru.yandex.practicum.filmorate.service.reviewservice.ReviewServiceImpl;
 
 import javax.validation.Valid;
 import java.util.ArrayList;
@@ -16,7 +17,7 @@ public class ReviewController {
     private final ReviewService reviewService;
 
     @Autowired
-    public ReviewController(ReviewService reviewService) {
+    public ReviewController(ReviewServiceImpl reviewService) {
         this.reviewService = reviewService;
     }
 

@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.service.userservice;
 
 
+import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 
@@ -25,6 +26,8 @@ public interface UserService {
     List<User> getAllUsers();
 
     User deleteUser(long id);
+
+    List<Event> getUsersEventFeed(long userId);
 
     Collection<Film> getRecommendations(long id);
 }

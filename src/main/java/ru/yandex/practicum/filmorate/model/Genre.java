@@ -12,7 +12,7 @@ import java.util.Set;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Genre implements Comparable<Genre> {
+public class Genre {
 
     private long id;
 
@@ -22,16 +22,4 @@ public class Genre implements Comparable<Genre> {
     @JsonIgnore
     @EqualsAndHashCode.Exclude
     private Set<Film> films = new HashSet<>();
-
-    @Override
-    public int compareTo(Genre o) {
-        if (o == null) {
-            return -1;
-        }
-
-        long id = this.getId();
-        long comrId = o.getId();
-
-        return Math.toIntExact(id - comrId);
-    }
 }

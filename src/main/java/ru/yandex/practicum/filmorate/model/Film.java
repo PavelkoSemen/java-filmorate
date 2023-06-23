@@ -2,12 +2,13 @@ package ru.yandex.practicum.filmorate.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
-import ru.yandex.practicum.filmorate.utils.AfterDate;
+import ru.yandex.practicum.filmorate.utils.customannotations.AfterDate;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
@@ -30,8 +31,8 @@ public class Film {
     @JsonIgnore
     private Set<User> users = new HashSet<>();
     private Mpa mpa;
-    private Set<Genre> genres = new TreeSet<>();
-    private Set<Director> directors = new TreeSet<>();
+    private Set<Genre> genres = new TreeSet<>(Comparator.comparingLong(Genre::getId));
+    private Set<Director> directors = new TreeSet<>(Comparator.comparingLong(Director::getId));
 
     public Film(long id, String name, String description, LocalDate releaseDate, int duration, Mpa mpa) {
         this.id = id;

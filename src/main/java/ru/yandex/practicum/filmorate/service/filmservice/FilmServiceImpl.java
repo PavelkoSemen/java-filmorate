@@ -9,6 +9,9 @@ import ru.yandex.practicum.filmorate.error.SaveFilmException;
 import ru.yandex.practicum.filmorate.error.UnknownFilmException;
 import ru.yandex.practicum.filmorate.error.UnknownUserException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.eventenum.EventOperation;
+import ru.yandex.practicum.filmorate.model.eventenum.EventType;
+import ru.yandex.practicum.filmorate.utils.customannotations.EventFeed;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,6 +50,7 @@ public class FilmServiceImpl implements FilmService {
     }
 
     @Override
+    @EventFeed(operation = EventOperation.ADD, type = EventType.LIKE)
     public void putLike(long id, long userId) {
         filmRepository.get(id).orElseThrow(() ->
                 new UnknownFilmException("Фильм не найден: " + id));
@@ -56,6 +60,7 @@ public class FilmServiceImpl implements FilmService {
     }
 
     @Override
+    @EventFeed(operation = EventOperation.REMOVE, type = EventType.LIKE)
     public void deleteLike(long id, long userId) {
         filmRepository.get(id).orElseThrow(() ->
                 new UnknownFilmException("Фильм не найден: " + id));

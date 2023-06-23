@@ -22,7 +22,7 @@ import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static ru.yandex.practicum.filmorate.utils.FilmsSQL.*;
+import static ru.yandex.practicum.filmorate.utils.sqlscript.FilmsSQL.*;
 
 @Repository
 @Primary
@@ -180,37 +180,28 @@ public class JdbcFilmRepository implements FilmRepository {
         List<Long> genresId = film.getGenres().stream()
                 .map(Genre::getId)
                 .collect(Collectors.toList());
-        if (!genresId.isEmpty()) {
-            jdbcTemplate.batchUpdate(insertIntoFilmGenre, new BatchPreparedStatementSetter() {
-                @Override
-                public void setValues(PreparedStatement ps, int i) throws SQLException {
-                    ps.setLong(1, film.getId());
-                    ps.setLong(2, genresId.get(i));
-                }
-
-                @Override
-                public int getBatchSize() {
-                    return genresId.size();
-                }
-            });
-        }
+        batchInsertFilmParameters(film, genresId, insertIntoFilmGenre);
     }
 
     private void insertDirectors(Film film) {
         List<Long> directorsId = film.getDirectors().stream()
                 .map(Director::getId)
                 .collect(Collectors.toList());
-        if (!directorsId.isEmpty()) {
-            jdbcTemplate.batchUpdate(insertIntoFilmDirector, new BatchPreparedStatementSetter() {
+        batchInsertFilmParameters(film, directorsId, insertIntoFilmDirector);
+    }
+
+    private void batchInsertFilmParameters(Film film, List<Long> parameterId, String insertIntoFilmParameter) {
+        if (!parameterId.isEmpty()) {
+            jdbcTemplate.batchUpdate(insertIntoFilmParameter, new BatchPreparedStatementSetter() {
                 @Override
                 public void setValues(PreparedStatement ps, int i) throws SQLException {
                     ps.setLong(1, film.getId());
-                    ps.setLong(2, directorsId.get(i));
+                    ps.setLong(2, parameterId.get(i));
                 }
 
                 @Override
                 public int getBatchSize() {
-                    return directorsId.size();
+                    return parameterId.size();
                 }
             });
         }
@@ -271,5 +262,4 @@ public class JdbcFilmRepository implements FilmRepository {
         film.setMpa(mpa);
         return film;
     }
-
 }
