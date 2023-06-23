@@ -44,9 +44,10 @@ public class UserController {
 
     @PutMapping(path = "/users/{id}/friends/{friendId}")
     public void addFriends(@PathVariable long id, @PathVariable long friendId) {
-        try {
+        try{
             userService.addFriend(id, friendId);
-        } catch (ObjectExistsException ignored) {
+        } catch (ObjectExistsException e) {
+            return;
         }
     }
 

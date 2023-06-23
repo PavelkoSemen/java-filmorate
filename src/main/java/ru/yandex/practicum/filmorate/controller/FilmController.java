@@ -44,7 +44,9 @@ public class FilmController {
     public void putLike(@PathVariable long id, @PathVariable long userId) {
         try{
             filmService.putLike(id, userId);
-        }catch (ObjectExistsException ignored){}
+        }catch (ObjectExistsException e){
+            return;
+        }
     }
 
     @DeleteMapping("/films/{id}/like/{userId}")
