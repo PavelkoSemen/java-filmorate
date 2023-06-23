@@ -118,6 +118,7 @@ public class JdbcFilmRepository implements FilmRepository {
     @Override
     public void putLike(long filmId, long userId) {
         log.info("Добавить фильму {} лайк, от пользователя {}", filmId, userId);
+        jdbcTemplate.update(deleteLikes, filmId, userId);
         jdbcTemplate.update(insertIntoLikes, filmId, userId);
         log.info("Добавлен лайк фильму {} , от пользователя {}", filmId, userId);
     }

@@ -84,6 +84,7 @@ public class JdbcUserRepository implements UserRepository {
     @Override
     public void insertFriend(long userId, long friendId) {
         log.info("Добавление пользователю {} друга {}", userId, friendId);
+        jdbcTemplate.update(deleteFriends, userId, friendId);
         jdbcTemplate.update(insertIntoFriends, userId, friendId);
         log.info("Друг {} добавлен пользователю {}", userId, friendId);
     }
