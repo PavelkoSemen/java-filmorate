@@ -1,6 +1,6 @@
 package ru.yandex.practicum.filmorate.error;
 
-public class ObjectExistsException extends RuntimeException{
+public class ObjectExistsException extends RuntimeException {
     public ObjectExistsException() {
     }
 
