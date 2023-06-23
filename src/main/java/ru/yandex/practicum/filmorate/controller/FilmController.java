@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.controller;
 
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.error.ObjectExistsException;
@@ -12,6 +13,7 @@ import javax.validation.constraints.Positive;
 import java.util.List;
 
 @RestController
+@Slf4j
 public class FilmController {
     private final FilmService filmService;
 
@@ -42,10 +44,10 @@ public class FilmController {
 
     @PutMapping("/films/{id}/like/{userId}")
     public void putLike(@PathVariable long id, @PathVariable long userId) {
-        try{
+        try {
             filmService.putLike(id, userId);
-        }catch (ObjectExistsException e){
-            return;
+        } catch (ObjectExistsException e) {
+            log.info(e.getMessage());
         }
     }
 
@@ -55,7 +57,7 @@ public class FilmController {
     }
 
     @GetMapping(path = "/films/popular")
-    public List<Film> getTopFilms(@RequestParam(defaultValue = "10")@Positive Integer count,
+    public List<Film> getTopFilms(@RequestParam(defaultValue = "10") @Positive Integer count,
                                   @RequestParam(required = false, name = "genreId") Long genreId,
                                   @RequestParam(required = false, name = "year") Integer year) {
         return filmService.getTopFilms(count, genreId, year);

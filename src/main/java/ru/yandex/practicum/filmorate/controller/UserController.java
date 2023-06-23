@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.controller;
 
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.error.ObjectExistsException;
@@ -14,6 +15,7 @@ import java.util.Collection;
 import java.util.List;
 
 @RestController
+@Slf4j
 public class UserController {
     private final UserService userService;
 
@@ -44,10 +46,10 @@ public class UserController {
 
     @PutMapping(path = "/users/{id}/friends/{friendId}")
     public void addFriends(@PathVariable long id, @PathVariable long friendId) {
-        try{
+        try {
             userService.addFriend(id, friendId);
         } catch (ObjectExistsException e) {
-            return;
+            log.info(e.getMessage());
         }
     }
 
