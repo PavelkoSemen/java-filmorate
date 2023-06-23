@@ -71,4 +71,9 @@ public class FilmController {
                                          @RequestParam(defaultValue = "without") String sortBy) {
         return filmService.getFilmsByDirector(directorId, sortBy);
     }
+
+    @GetMapping(path = "/films/search")
+    public List<Film> search(@RequestParam String query, @RequestParam String by) {
+        return filmService.search(query, by);
+    }
 }

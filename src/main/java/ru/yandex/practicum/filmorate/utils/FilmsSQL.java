@@ -119,4 +119,7 @@ public final class FilmsSQL {
                     joinFilmAttribute +
             " WHERE fd.director_id = ?\n" +
             "ORDER BY f.release";
+
+    public static final String queryMainSearch = getAllFilms + " WHERE 1=1 ";
+
 }
