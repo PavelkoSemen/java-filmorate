@@ -12,6 +12,7 @@ import ru.yandex.practicum.filmorate.model.Film;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -64,8 +65,30 @@ public class FilmServiceImpl implements FilmService {
     }
 
     @Override
-    public List<Film> getTopFilms(int count) {
-        return filmRepository.findTopFilmsWithLimit(count);
+    public List<Film> getTopFilms(int count, Long genreId, Integer year) {
+        if (genreId != null && year != null) {
+            List<Film> listByGenreByYear = new ArrayList<>();
+            filmRepository.findTopFilmsWithLimit(count)
+                    .forEach(film -> film.getGenres()
+                            .stream()
+                            .filter(genre -> genre.getId() == genreId && film.getReleaseDate().getYear() == year)
+                            .map(genre -> film).forEach(listByGenreByYear::add));
+            return listByGenreByYear;
+        } else if (genreId != null) {
+            List<Film> listByGenre = new ArrayList<>();
+            filmRepository.findTopFilmsWithLimit(count)
+                    .forEach(film -> film.getGenres()
+                            .stream()
+                            .filter(genre -> genre.getId() == genreId)
+                            .map(genre -> film).forEach(listByGenre::add));
+            return listByGenre;
+        } else if (year != null) {
+            return filmRepository.findTopFilmsWithLimit(count).stream()
+                    .filter(film -> film.getReleaseDate().getYear() == year)
+                    .collect(Collectors.toList());
+        } else {
+            return filmRepository.findTopFilmsWithLimit(count);
+        }
     }
 
     @Override
