@@ -4,7 +4,7 @@ public final class FilmsSQL {
     private FilmsSQL() {
     }
 
-    private static final String joinFilmAttribute = "LEFT JOIN mpa m\n" +
+    public static final String joinFilmAttribute = "LEFT JOIN mpa m\n" +
             "                   ON f.mpa_id = m.mpa_id\n" +
             "         LEFT JOIN film_genre fg\n" +
             "                   ON f.film_id = fg.film_id\n" +

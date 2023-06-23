@@ -194,6 +194,10 @@ public class JdbcFilmRepository implements FilmRepository {
     }
 
     private List<Film> extractData(ResultSet rs) throws SQLException {
+        return extractFilmData(rs);
+    }
+
+    public static List<Film> extractFilmData(ResultSet rs) throws SQLException {
         List<Film> list = new ArrayList<>();
         Film currentFilm = new Film();
         long previousId = 0;
@@ -213,7 +217,7 @@ public class JdbcFilmRepository implements FilmRepository {
         return list;
     }
 
-    private Genre mapRowGenre(ResultSet rs) throws SQLException {
+    private static Genre mapRowGenre(ResultSet rs) throws SQLException {
         log.info("Заполнение жанров");
         Genre genre = new Genre();
         genre.setId(rs.getLong("GENRE_ID"));
@@ -221,7 +225,7 @@ public class JdbcFilmRepository implements FilmRepository {
         return genre;
     }
 
-    private Director mapRowDirector(ResultSet rs) throws SQLException {
+    private static Director mapRowDirector(ResultSet rs) throws SQLException {
         log.info("Заполнение режиссеров");
         Director director = new Director();
         director.setId(rs.getLong("DIRECTOR_ID"));
@@ -229,7 +233,7 @@ public class JdbcFilmRepository implements FilmRepository {
         return director;
     }
 
-    private Film mapRowFilms(ResultSet rs) throws SQLException {
+    private static Film mapRowFilms(ResultSet rs) throws SQLException {
         log.info("Заполнение фильма");
         Film film = new Film();
         film.setId(rs.getLong("FILM_ID"));
