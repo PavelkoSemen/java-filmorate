@@ -9,7 +9,7 @@ public interface DirectorRepository {
 
     Optional<Director> getDirector(long id);
 
-    Optional<Director>  createDirector(Director director);
+    Optional<Director> createDirector(Director director);
 
     Optional<Director> updateDirector(Director director);
 

@@ -9,6 +9,10 @@ import ru.yandex.practicum.filmorate.error.SaveFilmException;
 import ru.yandex.practicum.filmorate.error.UnknownFilmException;
 import ru.yandex.practicum.filmorate.error.UnknownUserException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.model.eventenum.EventOperation;
+import ru.yandex.practicum.filmorate.model.eventenum.EventType;
+import ru.yandex.practicum.filmorate.utils.customannotations.EventFeed;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,6 +51,7 @@ public class FilmServiceImpl implements FilmService {
     }
 
     @Override
+    @EventFeed(operation = EventOperation.ADD, type = EventType.LIKE)
     public void putLike(long id, long userId) {
         filmRepository.get(id).orElseThrow(() ->
                 new UnknownFilmException("Фильм не найден: " + id));
@@ -56,6 +61,7 @@ public class FilmServiceImpl implements FilmService {
     }
 
     @Override
+    @EventFeed(operation = EventOperation.REMOVE, type = EventType.LIKE)
     public void deleteLike(long id, long userId) {
         filmRepository.get(id).orElseThrow(() ->
                 new UnknownFilmException("Фильм не найден: " + id));
@@ -66,29 +72,14 @@ public class FilmServiceImpl implements FilmService {
 
     @Override
     public List<Film> getTopFilms(int count, Long genreId, Integer year) {
-        if (genreId != null && year != null) {
-            List<Film> listByGenreByYear = new ArrayList<>();
-            filmRepository.findTopFilmsWithLimit(count)
-                    .forEach(film -> film.getGenres()
-                            .stream()
-                            .filter(genre -> genre.getId() == genreId && film.getReleaseDate().getYear() == year)
-                            .map(genre -> film).forEach(listByGenreByYear::add));
-            return listByGenreByYear;
-        } else if (genreId != null) {
-            List<Film> listByGenre = new ArrayList<>();
-            filmRepository.findTopFilmsWithLimit(count)
-                    .forEach(film -> film.getGenres()
-                            .stream()
-                            .filter(genre -> genre.getId() == genreId)
-                            .map(genre -> film).forEach(listByGenre::add));
-            return listByGenre;
-        } else if (year != null) {
-            return filmRepository.findTopFilmsWithLimit(count).stream()
-                    .filter(film -> film.getReleaseDate().getYear() == year)
-                    .collect(Collectors.toList());
-        } else {
-            return filmRepository.findTopFilmsWithLimit(count);
-        }
+        return filmRepository.findTopFilmsWithLimit(count).stream()
+                .filter(film -> genreId == null || film.getGenres()
+                        .stream()
+                        .map(Genre::getId)
+                        .anyMatch(id -> id.equals(genreId)))
+                .filter(film -> year == null || film.getReleaseDate().getYear() == year)
+                .collect(Collectors.toList());
+
     }
 
     @Override

@@ -14,7 +14,8 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
 @AutoConfigureTestDatabase
@@ -53,7 +54,7 @@ class DirectorRepositoryTest {
         director2.setName("Новый режиссер 2");
         directorRepository.updateDirector(director2);
         assertThat(directorRepository.getDirector(id)).isPresent().hasValueSatisfying(director ->
-                        assertThat(director).hasFieldOrPropertyWithValue("name", "Новый режиссер 2"));
+                assertThat(director).hasFieldOrPropertyWithValue("name", "Новый режиссер 2"));
     }
 
     @Test

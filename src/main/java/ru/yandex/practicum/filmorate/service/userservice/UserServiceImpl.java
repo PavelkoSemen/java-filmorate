@@ -3,11 +3,16 @@ package ru.yandex.practicum.filmorate.service.userservice;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.dao.EventRepository;
 import ru.yandex.practicum.filmorate.dao.UserRepository;
 import ru.yandex.practicum.filmorate.error.SaveUserException;
 import ru.yandex.practicum.filmorate.error.UnknownUserException;
+import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.model.eventenum.EventOperation;
+import ru.yandex.practicum.filmorate.model.eventenum.EventType;
+import ru.yandex.practicum.filmorate.utils.customannotations.EventFeed;
 
 import java.util.Collection;
 import java.util.List;
@@ -16,10 +21,12 @@ import java.util.List;
 @Service
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
+    private final EventRepository eventRepository;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository) {
+    public UserServiceImpl(UserRepository userRepository, EventRepository eventRepository) {
         this.userRepository = userRepository;
+        this.eventRepository = eventRepository;
     }
 
     @Override
@@ -44,6 +51,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @EventFeed(operation = EventOperation.ADD, type = EventType.FRIEND)
     public void addFriend(long userId, long friendId) {
         userRepository.get(userId).orElseThrow(() ->
                 new UnknownUserException("Пользователь не найден: " + userId));
@@ -54,6 +62,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @EventFeed(operation = EventOperation.REMOVE, type = EventType.FRIEND)
     public void removeFriend(long userId, long friendId) {
         userRepository.get(userId).orElseThrow(() ->
                 new UnknownUserException("Пользователь не найден: " + userId));
@@ -98,5 +107,12 @@ public class UserServiceImpl implements UserService {
     public Collection<Film> getRecommendations(long id) {
         log.info("Получение рекомендаций по id: {}:", id);
         return userRepository.getRecommendations(id);
+    }
+
+    @Override
+    public List<Event> getUsersEventFeed(long userId) {
+        userRepository.get(userId).orElseThrow(() ->
+                new UnknownUserException("Пользователь не найден: " + userId));
+        return eventRepository.getEventFeed(userId);
     }
 }

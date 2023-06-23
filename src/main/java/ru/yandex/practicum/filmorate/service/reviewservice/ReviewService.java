@@ -1,136 +1,34 @@
 package ru.yandex.practicum.filmorate.service.reviewservice;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.dao.ReviewRepository;
-import ru.yandex.practicum.filmorate.error.UnknownReviewException;
 import ru.yandex.practicum.filmorate.model.Review;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
-@Service
-public class ReviewService {
+public interface ReviewService {
 
-    private final ReviewRepository reviewRepository;
+    boolean isValidReviewId(Long reviewId);
 
-    @Autowired
-    public ReviewService(ReviewRepository reviewRepository) {
-        this.reviewRepository = reviewRepository;
-    }
+    boolean isValidFilmId(Long filmId);
 
-    /*
-        Проверяем наличие объектов в базе
-     */
-    public boolean isValidReviewId(Long reviewId) {
+    boolean isValidUserId(Long userId);
 
-        return reviewRepository.containsKey(reviewId);
-    }
+    boolean isValidReview(Review review);
 
-    public boolean isValidFilmId(Long filmId) {
+    List<Review> getAll(Long filmId, Integer count);
 
-        return reviewRepository.containsFilm(filmId);
-    }
+    Review addReview(Review review);
 
-    public boolean isValidUserId(Long userId) {
+    Review updateReview(Review review);
 
-        return reviewRepository.containsUser(userId);
-    }
+    Review getReviewBiId(Long reviewId);
 
-    public boolean isValidReview(Review review) {
+    Review deleteReview(Long reviewId);
 
-        return isValidFilmId(review.getFilmId()) && isValidUserId(review.getUserId());
-    }
+    void addLikeFromUser(Long reviewId, Long userId);
 
-    /*
-        Методы для работы с базой отзывов
-     */
-    public List<Review> getAll(Long filmId, Integer count) {
+    void addDislikeFromUser(Long reviewId, Long userId);
 
-        return reviewRepository.getAll(filmId, count).stream()
-                .sorted((r0, r1) -> {
-                    int comp = r1.getUseful().compareTo(r0.getUseful()); //сортировка по useful DESC
-                    if (comp == 0) {
-                        comp = r0.getReviewId().compareTo(r1.getReviewId()); //сортировка по reviewId ASC
-                    }
-                    return comp;
-                })
-                .collect(Collectors.toList());
-    }
+    void removeLikeFromUser(Long reviewId, Long userId);
 
-    public Review addReview(Review review) {
-
-        if (isValidReview(review)) {
-            return reviewRepository.save(review);
-        } else {
-            throw new UnknownReviewException("Некорректные параметры запроса: " + review);
-        }
-    }
-
-    public Review updateReview(Review review) {
-
-        if (isValidReviewId(review.getReviewId()) && isValidReview(review)) {
-            return reviewRepository.update(review);
-        } else {
-            throw new UnknownReviewException("Некорректные параметры запроса: " + review);
-        }
-
-    }
-
-    public Review getReviewBiId(Long reviewId) {
-
-        if (isValidReviewId(reviewId)) {
-            return reviewRepository.get(reviewId);
-        } else {
-            throw new UnknownReviewException("Некорректные параметры запроса: " + reviewId);
-        }
-    }
-
-    public void deleteReview(Long reviewId) {
-
-        if (isValidReviewId(reviewId)) {
-            reviewRepository.delete(reviewId);
-        } else {
-            throw new UnknownReviewException("Некорректные параметры запроса: " + reviewId);
-        }
-    }
-
-    /*
-        Методы для работы с оценками отзывов
-     */
-    public void addLikeFromUser(Long reviewId, Long userId) {
-
-        if (isValidReviewId(reviewId) && isValidUserId(userId)) {
-            reviewRepository.putLike(reviewId, userId);
-        } else {
-            throw new UnknownReviewException("Некорректные параметры запроса: " + reviewId + ", " + userId);
-        }
-    }
-
-    public void addDislikeFromUser(Long reviewId, Long userId) {
-
-        if (isValidReviewId(reviewId) && isValidUserId(userId)) {
-            reviewRepository.putDislike(reviewId, userId);
-        } else {
-            throw new UnknownReviewException("Некорректные параметры запроса: " + reviewId + ", " + userId);
-        }
-    }
-
-    public void removeLikeFromUser(Long reviewId, Long userId) {
-
-        if (isValidReviewId(reviewId) && isValidUserId(userId)) {
-            reviewRepository.deleteLike(reviewId, userId);
-        } else {
-            throw new UnknownReviewException("Некорректные параметры запроса: " + reviewId + ", " + userId);
-        }
-    }
-
-    public void removeDislikeFromUser(Long reviewId, Long userId) {
-
-        if (isValidReviewId(reviewId) && isValidUserId(userId)) {
-            reviewRepository.deleteDislike(reviewId, userId);
-        } else {
-            throw new UnknownReviewException("Некорректные параметры запроса: " + reviewId + ", " + userId);
-        }
-    }
+    void removeDislikeFromUser(Long reviewId, Long userId);
 }

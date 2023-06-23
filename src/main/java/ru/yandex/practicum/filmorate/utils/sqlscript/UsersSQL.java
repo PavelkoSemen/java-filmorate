@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.utils;
+package ru.yandex.practicum.filmorate.utils.sqlscript;
 
 public final class UsersSQL {
     private UsersSQL() {

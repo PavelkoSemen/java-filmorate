@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.utils;
+package ru.yandex.practicum.filmorate.utils.sqlscript;
 
 public final class FilmsSQL {
     private FilmsSQL() {
@@ -107,7 +107,7 @@ public final class FilmsSQL {
             "                    FROM likes\n" +
             "                    GROUP BY film_id) cf\n" +
             "                   ON cf.film_id = f.film_id\n" +
-                                joinFilmAttribute +
+            joinFilmAttribute +
             " WHERE fd.director_id = ?\n" +
             "ORDER BY cf.count_likes desc";
 
@@ -116,7 +116,7 @@ public final class FilmsSQL {
             "     , g.*\n" +
             "     , d.*\n" +
             "FROM films f\n" +
-                    joinFilmAttribute +
+            joinFilmAttribute +
             " WHERE fd.director_id = ?\n" +
             "ORDER BY f.release";
 
