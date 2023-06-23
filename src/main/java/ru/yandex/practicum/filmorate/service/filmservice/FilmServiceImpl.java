@@ -61,9 +61,9 @@ public class FilmServiceImpl implements FilmService {
                 new UnknownUserException("Пользователь не найден: " + userId));
         try {
             filmRepository.putLike(id, userId);
-        }catch (DataAccessException ex){
+        } catch (DataAccessException ex) {
             log.error("Связь между объектами существует {} {}", id, userId);
-            throw new  ObjectExistsException("Связь между объектами существует");
+            throw new ObjectExistsException("Связь между объектами существует");
         }
     }
 

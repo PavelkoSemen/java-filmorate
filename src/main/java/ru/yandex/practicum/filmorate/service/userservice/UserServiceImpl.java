@@ -61,7 +61,7 @@ public class UserServiceImpl implements UserService {
                 new UnknownUserException("Пользователь не найден: " + friendId));
         try {
             userRepository.insertFriend(userId, friendId);
-        }catch (DataAccessException ex){
+        } catch (DataAccessException ex) {
             log.error("Связь между объектами существует {} {}", userId, friendId);
             throw new ObjectExistsException("Связь между объектами существует");
         }
