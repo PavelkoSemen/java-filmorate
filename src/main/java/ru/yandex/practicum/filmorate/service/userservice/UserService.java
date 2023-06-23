@@ -15,9 +15,9 @@ public interface UserService {
 
     User updateUser(User user);
 
-    void addFriend(long userId, long friendId);
+    boolean addFriend(long userId, long friendId);
 
-    void removeFriend(long userId, long friendId);
+    boolean removeFriend(long userId, long friendId);
 
     List<User> getFriends(long id);
 

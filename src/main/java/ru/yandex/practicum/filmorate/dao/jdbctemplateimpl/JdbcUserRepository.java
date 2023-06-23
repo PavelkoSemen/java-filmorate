@@ -82,18 +82,17 @@ public class JdbcUserRepository implements UserRepository {
     }
 
     @Override
-    public void insertFriend(long userId, long friendId) {
+    public boolean insertFriend(long userId, long friendId) {
         log.info("Добавление пользователю {} друга {}", userId, friendId);
-        jdbcTemplate.update(deleteFriends, userId, friendId);
+        int countRows = jdbcTemplate.update(deleteFriends, userId, friendId);
         jdbcTemplate.update(insertIntoFriends, userId, friendId);
-        log.info("Друг {} добавлен пользователю {}", userId, friendId);
+        return countRows == 0;
     }
 
     @Override
-    public void deleteFriend(long userId, long friendId) {
+    public boolean deleteFriend(long userId, long friendId) {
         log.info("Удаление у пользователя {} друга {}", userId, friendId);
-        jdbcTemplate.update(deleteFriends, userId, friendId);
-        log.info("Друг {} удален у пользователя {}", userId, friendId);
+        return jdbcTemplate.update(deleteFriends, userId, friendId) > 0;
     }
 
     @Override

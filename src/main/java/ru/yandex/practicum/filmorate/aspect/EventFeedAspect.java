@@ -45,9 +45,11 @@ public class EventFeedAspect {
     }
 
 
-    @AfterReturning("evenFilms()")
-    public void insertEventFilms(JoinPoint jp) {
-
+    @AfterReturning(pointcut = "evenFilms()", returning = "isDone")
+    public void insertEventFilms(JoinPoint jp, Object isDone) {
+        System.out.println("ТУту");
+        if (!(Boolean) isDone)
+            return;
         Object[] args = jp.getArgs();
         long entityId = (long) args[0];
         long userId = (long) args[1];
@@ -55,9 +57,10 @@ public class EventFeedAspect {
         saveEvent(jp, userId, entityId);
     }
 
-    @AfterReturning("evenUsers()")
-    public void insertEventUsers(JoinPoint jp) {
-
+    @AfterReturning(pointcut = "evenUsers()", returning = "isDone")
+    public void insertEventUsers(JoinPoint jp, Object isDone) {
+        if (!(Boolean) isDone)
+            return;
         Object[] args = jp.getArgs();
         long userId = (long) args[0];
         long entityId = (long) args[1];

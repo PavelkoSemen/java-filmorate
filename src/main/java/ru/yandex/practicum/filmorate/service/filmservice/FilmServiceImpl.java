@@ -2,11 +2,9 @@ package ru.yandex.practicum.filmorate.service.filmservice;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dao.FilmRepository;
 import ru.yandex.practicum.filmorate.dao.UserRepository;
-import ru.yandex.practicum.filmorate.error.ObjectExistsException;
 import ru.yandex.practicum.filmorate.error.SaveFilmException;
 import ru.yandex.practicum.filmorate.error.UnknownFilmException;
 import ru.yandex.practicum.filmorate.error.UnknownUserException;
@@ -54,27 +52,23 @@ public class FilmServiceImpl implements FilmService {
 
     @Override
     @EventFeed(operation = EventOperation.ADD, type = EventType.LIKE)
-    public void putLike(long id, long userId) {
+    public boolean putLike(long id, long userId) {
         filmRepository.get(id).orElseThrow(() ->
                 new UnknownFilmException("Фильм не найден: " + id));
         userRepository.get(userId).orElseThrow(() ->
                 new UnknownUserException("Пользователь не найден: " + userId));
-        try {
-            filmRepository.putLike(id, userId);
-        } catch (DataAccessException ex) {
-            log.error("Связь между объектами существует {} {}", id, userId);
-            throw new ObjectExistsException("Связь между объектами существует");
-        }
+        return filmRepository.putLike(id, userId);
+
     }
 
     @Override
     @EventFeed(operation = EventOperation.REMOVE, type = EventType.LIKE)
-    public void deleteLike(long id, long userId) {
+    public boolean deleteLike(long id, long userId) {
         filmRepository.get(id).orElseThrow(() ->
                 new UnknownFilmException("Фильм не найден: " + id));
         userRepository.get(userId).orElseThrow(() ->
                 new UnknownUserException("Пользователь не найден: " + userId));
-        filmRepository.deleteLike(id, userId);
+        return filmRepository.deleteLike(id, userId);
     }
 
     @Override

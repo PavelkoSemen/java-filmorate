@@ -2,11 +2,9 @@ package ru.yandex.practicum.filmorate.service.userservice;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dao.EventRepository;
 import ru.yandex.practicum.filmorate.dao.UserRepository;
-import ru.yandex.practicum.filmorate.error.ObjectExistsException;
 import ru.yandex.practicum.filmorate.error.SaveUserException;
 import ru.yandex.practicum.filmorate.error.UnknownUserException;
 import ru.yandex.practicum.filmorate.model.Event;
@@ -54,28 +52,23 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @EventFeed(operation = EventOperation.ADD, type = EventType.FRIEND)
-    public void addFriend(long userId, long friendId) {
+    public boolean addFriend(long userId, long friendId) {
         userRepository.get(userId).orElseThrow(() ->
                 new UnknownUserException("Пользователь не найден: " + userId));
         userRepository.get(friendId).orElseThrow(() ->
                 new UnknownUserException("Пользователь не найден: " + friendId));
-        try {
-            userRepository.insertFriend(userId, friendId);
-        } catch (DataAccessException ex) {
-            log.error("Связь между объектами существует {} {}", userId, friendId);
-            throw new ObjectExistsException("Связь между объектами существует");
-        }
+        return userRepository.insertFriend(userId, friendId);
     }
 
     @Override
     @EventFeed(operation = EventOperation.REMOVE, type = EventType.FRIEND)
-    public void removeFriend(long userId, long friendId) {
+    public boolean removeFriend(long userId, long friendId) {
         userRepository.get(userId).orElseThrow(() ->
                 new UnknownUserException("Пользователь не найден: " + userId));
         userRepository.get(friendId).orElseThrow(() ->
                 new UnknownUserException("Пользователь не найден: " + friendId));
 
-        userRepository.deleteFriend(userId, friendId);
+        return userRepository.deleteFriend(userId, friendId);
     }
 
     @Override

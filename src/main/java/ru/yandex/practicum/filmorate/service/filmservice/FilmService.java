@@ -12,9 +12,9 @@ public interface FilmService {
 
     Film updateFilm(Film film);
 
-    void putLike(long id, long userId);
+    boolean putLike(long id, long userId);
 
-    void deleteLike(long id, long userId);
+    boolean deleteLike(long id, long userId);
 
     List<Film> getTopFilms(int count, Long genreId, Integer year);
 

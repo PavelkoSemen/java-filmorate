@@ -62,7 +62,7 @@ public class JdbcEventRepository implements EventRepository {
     @Override
     public List<Event> getEventFeed(long userId) {
         log.info("Получение ленты событий");
-        return jdbcTemplate.query(getEventsByUserId, this::mapRow, userId, userId);
+        return jdbcTemplate.query(getEventsByUserId, this::mapRow, userId);
     }
 
     public Event mapRow(ResultSet rs, int rowNum) throws SQLException {

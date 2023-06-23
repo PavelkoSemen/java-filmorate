@@ -116,17 +116,17 @@ public class JdbcFilmRepository implements FilmRepository {
     }
 
     @Override
-    public void putLike(long filmId, long userId) {
+    public boolean putLike(long filmId, long userId) {
         log.info("Добавить фильму {} лайк, от пользователя {}", filmId, userId);
+        int countRows = jdbcTemplate.update(deleteLikes, filmId, userId);
         jdbcTemplate.update(insertIntoLikes, filmId, userId);
-        log.info("Добавлен лайк фильму {} , от пользователя {}", filmId, userId);
+        return countRows == 0;
     }
 
     @Override
-    public void deleteLike(long filmId, long userId) {
+    public boolean deleteLike(long filmId, long userId) {
         log.info("Удалить у фильма {} лайк, от пользователя {}", filmId, userId);
-        jdbcTemplate.update(deleteLikes, filmId, userId);
-        log.info("Удален лайк у фильма {} , от пользователя {}", filmId, userId);
+        return jdbcTemplate.update(deleteLikes, filmId, userId) > 0;
     }
 
     @Override

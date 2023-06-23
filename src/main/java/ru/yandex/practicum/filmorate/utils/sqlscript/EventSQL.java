@@ -11,6 +11,5 @@ public final class EventSQL {
     public static final String getEventById = "SELECT * FROM events e WHERE e.event_id = ?";
     public static final String getEventsByUserId = "SELECT e.*\n" +
             "FROM events e\n" +
-            "WHERE e.user_id in (SELECT friend_id FROM friends f WHERE f.user_id = ?)\n" +
-            "   OR e.user_id = ?";
+            "WHERE e.user_id = ?";
 }
