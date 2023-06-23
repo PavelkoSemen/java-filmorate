@@ -2,9 +2,11 @@ package ru.yandex.practicum.filmorate.service.filmservice;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dao.FilmRepository;
 import ru.yandex.practicum.filmorate.dao.UserRepository;
+import ru.yandex.practicum.filmorate.error.ObjectExistsException;
 import ru.yandex.practicum.filmorate.error.SaveFilmException;
 import ru.yandex.practicum.filmorate.error.UnknownFilmException;
 import ru.yandex.practicum.filmorate.error.UnknownUserException;
@@ -57,7 +59,12 @@ public class FilmServiceImpl implements FilmService {
                 new UnknownFilmException("Фильм не найден: " + id));
         userRepository.get(userId).orElseThrow(() ->
                 new UnknownUserException("Пользователь не найден: " + userId));
-        filmRepository.putLike(id, userId);
+        try {
+            filmRepository.putLike(id, userId);
+        }catch (DataAccessException ex){
+            log.error("Связь между объектами существует {} {}", id, userId);
+            throw new  ObjectExistsException("Связь между объектами существует");
+        }
     }
 
     @Override

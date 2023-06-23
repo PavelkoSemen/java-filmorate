@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.error.ObjectExistsException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.filmservice.FilmService;
 
@@ -41,7 +42,9 @@ public class FilmController {
 
     @PutMapping("/films/{id}/like/{userId}")
     public void putLike(@PathVariable long id, @PathVariable long userId) {
-        filmService.putLike(id, userId);
+        try{
+            filmService.putLike(id, userId);
+        }catch (ObjectExistsException ignored){}
     }
 
     @DeleteMapping("/films/{id}/like/{userId}")

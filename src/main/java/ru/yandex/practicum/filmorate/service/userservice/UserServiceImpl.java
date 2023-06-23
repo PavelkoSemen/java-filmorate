@@ -2,9 +2,11 @@ package ru.yandex.practicum.filmorate.service.userservice;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dao.EventRepository;
 import ru.yandex.practicum.filmorate.dao.UserRepository;
+import ru.yandex.practicum.filmorate.error.ObjectExistsException;
 import ru.yandex.practicum.filmorate.error.SaveUserException;
 import ru.yandex.practicum.filmorate.error.UnknownUserException;
 import ru.yandex.practicum.filmorate.model.Event;
@@ -57,8 +59,12 @@ public class UserServiceImpl implements UserService {
                 new UnknownUserException("Пользователь не найден: " + userId));
         userRepository.get(friendId).orElseThrow(() ->
                 new UnknownUserException("Пользователь не найден: " + friendId));
-
-        userRepository.insertFriend(userId, friendId);
+        try {
+            userRepository.insertFriend(userId, friendId);
+        }catch (DataAccessException ex){
+            log.error("Связь между объектами существует {} {}", userId, friendId);
+            throw new ObjectExistsException("Связь между объектами существует");
+        }
     }
 
     @Override

@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.error.ObjectExistsException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.model.User;
@@ -43,7 +44,10 @@ public class UserController {
 
     @PutMapping(path = "/users/{id}/friends/{friendId}")
     public void addFriends(@PathVariable long id, @PathVariable long friendId) {
-        userService.addFriend(id, friendId);
+        try {
+            userService.addFriend(id, friendId);
+        } catch (ObjectExistsException ignored) {
+        }
     }
 
     @DeleteMapping(path = "/users/{id}/friends/{friendId}")
