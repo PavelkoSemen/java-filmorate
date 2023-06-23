@@ -8,6 +8,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.dao.DirectorRepository;
 import ru.yandex.practicum.filmorate.model.Director;
+
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -32,7 +33,7 @@ public class JdbcDirectorRepository implements DirectorRepository {
 
     public Optional<Director> getDirector(long id) {
         log.info("Получение режиссера с id: {}", id);
-        return jdbcTemplate.query(queryGetDirector, this::extractData, id).stream().findAny();
+        return jdbcTemplate.query(queryGetDirector, this::mapRow, id).stream().findAny();
     }
 
     public Optional<Director> createDirector(Director director) {
@@ -68,22 +69,10 @@ public class JdbcDirectorRepository implements DirectorRepository {
 
     public List<Director> getAllDirectors() {
         log.info("Получение всех режиссеров");
-        return jdbcTemplate.query(queryGetAllDirectors, this::extractData);
+        return jdbcTemplate.query(queryGetAllDirectors, this::mapRow);
     }
 
-    private List<Director> extractData(ResultSet rs) throws SQLException {
-        List<Director> list = new ArrayList<>();
-        long previousId = 0;
-        while (rs.next()) {
-            if (previousId != rs.getLong("DIRECTOR_ID")) {
-                list.add(mapRowDirector(rs));
-                previousId = rs.getLong("DIRECTOR_ID");
-            }
-        }
-        return list;
-    }
-
-    private Director mapRowDirector(ResultSet rs) throws SQLException {
+    private Director mapRow(ResultSet rs, int rowNum) throws SQLException {
         log.info("Заполнение режиссеров");
         Director director = new Director();
         director.setId(rs.getLong("DIRECTOR_ID"));

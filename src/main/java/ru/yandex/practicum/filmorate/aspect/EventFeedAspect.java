@@ -8,6 +8,7 @@ import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.dao.EventRepository;
+import ru.yandex.practicum.filmorate.error.SaveEventException;
 import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.model.Review;
 import ru.yandex.practicum.filmorate.utils.customannotations.EventFeed;
@@ -89,6 +90,7 @@ public class EventFeedAspect {
                 .operation(eventOperation.operation())
                 .build();
 
-        eventRepository.save(event);
+        eventRepository.save(event).orElseThrow(() ->
+                new SaveEventException("Не удалось сохранить событие"));
     }
 }
