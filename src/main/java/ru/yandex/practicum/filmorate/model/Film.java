@@ -1,7 +1,8 @@
 package ru.yandex.practicum.filmorate.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import ru.yandex.practicum.filmorate.utils.customannotations.AfterDate;
 
 import javax.validation.constraints.NotBlank;
@@ -9,7 +10,6 @@ import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -26,10 +26,6 @@ public class Film {
     private LocalDate releaseDate;
     @Positive(message = "Duration of the film is negative")
     private int duration;
-    @EqualsAndHashCode.Exclude
-    @ToString.Exclude
-    @JsonIgnore
-    private Set<User> users = new HashSet<>();
     private Mpa mpa;
     private Set<Genre> genres = new TreeSet<>(Comparator.comparingLong(Genre::getId));
     private Set<Director> directors = new TreeSet<>(Comparator.comparingLong(Director::getId));
@@ -41,16 +37,6 @@ public class Film {
         this.releaseDate = releaseDate;
         this.duration = duration;
         this.mpa = mpa;
-    }
-
-    public void addUser(User user) {
-        users.add(user);
-        user.getFilms().add(this);
-    }
-
-    public void removeUser(User user) {
-        users.remove(user);
-        user.getFilms().remove(this);
     }
 
     public void addGenre(Genre genre) {

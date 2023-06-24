@@ -1,15 +1,13 @@
 package ru.yandex.practicum.filmorate.dao.jdbctemplateimpl;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.dao.FilmRepository;
-import ru.yandex.practicum.filmorate.error.UnknownFilmException;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
@@ -25,31 +23,26 @@ import java.util.stream.Collectors;
 import static ru.yandex.practicum.filmorate.utils.sqlscript.FilmsSQL.*;
 
 @Repository
-@Primary
 @Slf4j
+@RequiredArgsConstructor
 public class JdbcFilmRepository implements FilmRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
-    @Autowired
-    public JdbcFilmRepository(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
-
     @Override
-    public List<Film> getAll() {
+    public List<Film> findAll() {
         log.info("Получение списка всех фильмов");
         return jdbcTemplate.query(getAllFilms, this::extractData);
     }
 
     @Override
-    public Optional<Film> get(long id) {
+    public Optional<Film> findFilmById(long id) {
         log.info("Получение фильма с id: {}", id);
         return jdbcTemplate.query(getFilmById, this::extractData, id).stream().findAny();
     }
 
     @Override
-    public List<Film> search(String query, String by) {
+    public List<Film> findFilmsByFilter(String query, String by) {
         List<String> splitBy = Arrays.asList(by.split(","));
         String concatQuery = "";
 
@@ -147,7 +140,7 @@ public class JdbcFilmRepository implements FilmRepository {
         return jdbcTemplate.query(getTopFilmsByUserId, this::extractData, userId);
     }
 
-    public List<Film> getFilmsByDirector(long directorId, String sortBy) {
+    public List<Film> findFilmsByDirector(long directorId, String sortBy) {
         log.info("Вернуть фильмы режиссера с id {}. Дополнительное условие {}", directorId, sortBy);
         List<Film> list;
         switch (sortBy) {
@@ -162,9 +155,6 @@ public class JdbcFilmRepository implements FilmRepository {
             default:
                 list = new LinkedList<>(Objects.requireNonNull(jdbcTemplate
                         .query(queryGetFilmsByDirectorWithoutSort, this::extractData, directorId)));
-        }
-        if (list.size() == 0) {
-            throw new UnknownFilmException("У режиссера с id: " + directorId + " нет фильмов");
         }
         return list;
     }

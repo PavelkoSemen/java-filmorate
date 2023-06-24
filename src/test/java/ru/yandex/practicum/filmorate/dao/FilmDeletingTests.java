@@ -79,14 +79,14 @@ class FilmDeletingTests {
     @Test
     void testFindFilmById() {
         createFilm();
-        var film = filmStorage.get(1 + offset);
+        var film = filmStorage.findFilmById(1 + offset);
         checkFilm(film);
     }
 
     @Test
     void testFindFilm1ById() {
         createFilm1();
-        var film = filmStorage.get(1 + offset);
+        var film = filmStorage.findFilmById(1 + offset);
         checkFilm1(film);
     }
 
@@ -94,7 +94,7 @@ class FilmDeletingTests {
     void testGetFilms() {
         createFilm();
         createFilm1();
-        var films = filmStorage.getAll();
+        var films = filmStorage.findAll();
         Assertions.assertEquals(2 + offset, films.size());
         checkFilm(films.stream().skip(offset).findFirst());
         checkFilm1(films.stream().skip(offset + 1).findFirst());
@@ -103,9 +103,9 @@ class FilmDeletingTests {
     @Test
     void testDeleteFilm() {
         createFilm();
-        var film = filmStorage.get(1 + offset);
+        var film = filmStorage.findFilmById(1 + offset);
         filmStorage.delete(film.orElse(null));
-        var films = filmStorage.getAll();
+        var films = filmStorage.findAll();
         Assertions.assertEquals(offset, films.size());
     }
 
@@ -113,9 +113,9 @@ class FilmDeletingTests {
     void testAdd2FilmsDelete1Film() {
         createFilm();
         createFilm1();
-        var film = filmStorage.get(1 + offset);
+        var film = filmStorage.findFilmById(1 + offset);
         filmStorage.delete(film.orElse(null));
-        var films = filmStorage.getAll();
+        var films = filmStorage.findAll();
         checkFilm1(films.stream().skip(offset).findFirst());
     }
 

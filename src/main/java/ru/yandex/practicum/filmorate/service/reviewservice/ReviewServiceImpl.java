@@ -3,7 +3,7 @@ package ru.yandex.practicum.filmorate.service.reviewservice;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dao.ReviewRepository;
-import ru.yandex.practicum.filmorate.error.UnknownReviewException;
+import ru.yandex.practicum.filmorate.error.EntityNotFoundException;
 import ru.yandex.practicum.filmorate.model.Review;
 import ru.yandex.practicum.filmorate.model.eventenum.EventOperation;
 import ru.yandex.practicum.filmorate.model.eventenum.EventType;
@@ -55,7 +55,7 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     public List<Review> getAll(Long filmId, Integer count) {
 
-        return reviewRepository.getAll(filmId, count).stream()
+        return reviewRepository.findAll(filmId, count).stream()
                 .sorted((r0, r1) -> {
                     int comp = r1.getUseful().compareTo(r0.getUseful()); //сортировка по useful DESC
                     if (comp == 0) {
@@ -73,7 +73,7 @@ public class ReviewServiceImpl implements ReviewService {
         if (isValidReview(review)) {
             return reviewRepository.save(review);
         } else {
-            throw new UnknownReviewException("Некорректные параметры запроса: " + review);
+            throw new EntityNotFoundException("Некорректные параметры запроса: " + review);
         }
     }
 
@@ -84,7 +84,7 @@ public class ReviewServiceImpl implements ReviewService {
         if (isValidReviewId(review.getReviewId()) && isValidReview(review)) {
             return reviewRepository.update(review);
         } else {
-            throw new UnknownReviewException("Некорректные параметры запроса: " + review);
+            throw new EntityNotFoundException("Некорректные параметры запроса: " + review);
         }
 
     }
@@ -92,11 +92,11 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     @EventFeed(operation = EventOperation.REMOVE, type = EventType.REVIEW)
     public Review deleteReview(Long reviewId) {
-        Review review = reviewRepository.get(reviewId);
+        Review review = reviewRepository.findReviewById(reviewId);
         if (review != null) {
             reviewRepository.delete(reviewId);
         } else {
-            throw new UnknownReviewException("Некорректные параметры запроса: " + reviewId);
+            throw new EntityNotFoundException("Некорректные параметры запроса: " + reviewId);
         }
         return review;
     }
@@ -105,9 +105,9 @@ public class ReviewServiceImpl implements ReviewService {
     public Review getReviewBiId(Long reviewId) {
 
         if (isValidReviewId(reviewId)) {
-            return reviewRepository.get(reviewId);
+            return reviewRepository.findReviewById(reviewId);
         } else {
-            throw new UnknownReviewException("Некорректные параметры запроса: " + reviewId);
+            throw new EntityNotFoundException("Некорректные параметры запроса: " + reviewId);
         }
     }
 
@@ -122,7 +122,7 @@ public class ReviewServiceImpl implements ReviewService {
         if (isValidReviewId(reviewId) && isValidUserId(userId)) {
             reviewRepository.putLike(reviewId, userId);
         } else {
-            throw new UnknownReviewException("Некорректные параметры запроса: " + reviewId + ", " + userId);
+            throw new EntityNotFoundException("Некорректные параметры запроса: " + reviewId + ", " + userId);
         }
     }
 
@@ -131,7 +131,7 @@ public class ReviewServiceImpl implements ReviewService {
         if (isValidReviewId(reviewId) && isValidUserId(userId)) {
             reviewRepository.putDislike(reviewId, userId);
         } else {
-            throw new UnknownReviewException("Некорректные параметры запроса: " + reviewId + ", " + userId);
+            throw new EntityNotFoundException("Некорректные параметры запроса: " + reviewId + ", " + userId);
         }
     }
 
@@ -140,7 +140,7 @@ public class ReviewServiceImpl implements ReviewService {
         if (isValidReviewId(reviewId) && isValidUserId(userId)) {
             reviewRepository.deleteLike(reviewId, userId);
         } else {
-            throw new UnknownReviewException("Некорректные параметры запроса: " + reviewId + ", " + userId);
+            throw new EntityNotFoundException("Некорректные параметры запроса: " + reviewId + ", " + userId);
         }
     }
 
@@ -149,7 +149,7 @@ public class ReviewServiceImpl implements ReviewService {
         if (isValidReviewId(reviewId) && isValidUserId(userId)) {
             reviewRepository.deleteDislike(reviewId, userId);
         } else {
-            throw new UnknownReviewException("Некорректные параметры запроса: " + reviewId + ", " + userId);
+            throw new EntityNotFoundException("Некорректные параметры запроса: " + reviewId + ", " + userId);
         }
     }
 }

@@ -6,9 +6,9 @@ import java.util.List;
 import java.util.Optional;
 
 public interface FilmRepository {
-    List<Film> getAll();
+    List<Film> findAll();
 
-    Optional<Film> get(long id);
+    Optional<Film> findFilmById(long id);
 
     Optional<Film> save(Film t);
 
@@ -24,9 +24,9 @@ public interface FilmRepository {
 
     List<Film> findTopFilmsByUserId(long userId);
 
-    List<Film> getFilmsByDirector(long directorId, String sortBy);
+    List<Film> findFilmsByDirector(long directorId, String sortBy);
 
     void delete(Film t);
 
-    List<Film> search(String query, String by);
+    List<Film> findFilmsByFilter(String query, String by);
 }

@@ -26,7 +26,7 @@ class MpaRepositoryTest {
     @Test
     @DisplayName("Должен вернуть возрастной рейтинг")
     void shouldReturnMpaById() {
-        Optional<Mpa> optionalMpa = mpaRepository.get(1);
+        Optional<Mpa> optionalMpa = mpaRepository.findMpaById(1);
         assertThat(optionalMpa).isPresent().hasValueSatisfying(mpa ->
                 assertThat(mpa).hasFieldOrPropertyWithValue("id", 1L));
     }
@@ -34,7 +34,7 @@ class MpaRepositoryTest {
     @Test
     @DisplayName("Должен вернуть список возрастных рейтингов")
     void shouldReturnAllMpa() {
-        List<Mpa> mpaList = mpaRepository.getAll();
+        List<Mpa> mpaList = mpaRepository.findAll();
         assertThat(mpaList).hasSize(5);
     }
 }

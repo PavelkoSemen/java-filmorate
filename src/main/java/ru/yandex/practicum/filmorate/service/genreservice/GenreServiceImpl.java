@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dao.GenreRepository;
-import ru.yandex.practicum.filmorate.error.UnknownGenreException;
+import ru.yandex.practicum.filmorate.error.EntityNotFoundException;
 import ru.yandex.practicum.filmorate.model.Genre;
 
 import java.util.List;
@@ -23,12 +23,12 @@ public class GenreServiceImpl implements GenreService {
     @Override
     public Genre getGenre(long id) {
         log.info("Получение жанра по id: {}", id);
-        return genreRepository.get(id).orElseThrow(() -> new UnknownGenreException("Жанр не найден: " + id));
+        return genreRepository.findGenreById(id).orElseThrow(() -> new EntityNotFoundException("Жанр не найден: " + id));
     }
 
     @Override
     public List<Genre> getAllGenres() {
         log.info("Получение жанров");
-        return genreRepository.getAll();
+        return genreRepository.findAll();
     }
 }

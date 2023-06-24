@@ -8,7 +8,7 @@ import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.dao.EventRepository;
-import ru.yandex.practicum.filmorate.error.SaveEventException;
+import ru.yandex.practicum.filmorate.error.EntitySaveException;
 import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.model.Review;
 import ru.yandex.practicum.filmorate.utils.customannotations.EventFeed;
@@ -45,8 +45,8 @@ public class EventFeedAspect {
     }
 
 
-    @AfterReturning(pointcut = "evenFilms()", returning = "isDone")
-    public void insertEventFilms(JoinPoint jp, Object isDone) {
+    @AfterReturning(pointcut = "evenFilms()")
+    public void insertEventFilms(JoinPoint jp) {
 //        if (!(Boolean) isDone)
 //            return;
         Object[] args = jp.getArgs();
@@ -56,10 +56,8 @@ public class EventFeedAspect {
         saveEvent(jp, userId, entityId);
     }
 
-    @AfterReturning(pointcut = "evenUsers()", returning = "isDone")
-    public void insertEventUsers(JoinPoint jp, Object isDone) {
-//        if (!(Boolean) isDone)
-//            return;
+    @AfterReturning(pointcut = "evenUsers()")
+    public void insertEventUsers(JoinPoint jp) {
         Object[] args = jp.getArgs();
         long userId = (long) args[0];
         long entityId = (long) args[1];
@@ -93,6 +91,6 @@ public class EventFeedAspect {
                 .build();
 
         eventRepository.save(event).orElseThrow(() ->
-                new SaveEventException("Не удалось сохранить событие"));
+                new EntitySaveException("Не удалось сохранить событие"));
     }
 }

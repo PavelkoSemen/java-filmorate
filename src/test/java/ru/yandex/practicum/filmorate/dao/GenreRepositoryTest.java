@@ -26,7 +26,7 @@ class GenreRepositoryTest {
     @Test
     @DisplayName("Должен вернуть жанр")
     void shouldReturnGenreById() {
-        Optional<Genre> optionalGenre = genreRepository.get(1);
+        Optional<Genre> optionalGenre = genreRepository.findGenreById(1);
         assertThat(optionalGenre).isPresent().hasValueSatisfying(genre ->
                 assertThat(genre).hasFieldOrPropertyWithValue("id", 1L));
     }
@@ -34,7 +34,7 @@ class GenreRepositoryTest {
     @Test
     @DisplayName("Должен вернуть список жанров")
     void shouldReturnGenreAllGenre() {
-        List<Genre> genres = genreRepository.getAll();
+        List<Genre> genres = genreRepository.findAll();
         assertThat(genres).hasSize(6);
     }
 }

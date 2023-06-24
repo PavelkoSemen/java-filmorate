@@ -5,9 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dao.FilmRepository;
 import ru.yandex.practicum.filmorate.dao.UserRepository;
-import ru.yandex.practicum.filmorate.error.SaveFilmException;
-import ru.yandex.practicum.filmorate.error.UnknownFilmException;
-import ru.yandex.practicum.filmorate.error.UnknownUserException;
+import ru.yandex.practicum.filmorate.error.EntityNotFoundException;
+import ru.yandex.practicum.filmorate.error.EntitySaveException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.eventenum.EventOperation;
@@ -33,30 +32,30 @@ public class FilmServiceImpl implements FilmService {
     @Override
     public Film createFilm(Film film) {
         log.info("Сохранение фильма: {}", film);
-        return filmRepository.save(film).orElseThrow(() -> new SaveFilmException("Фильм не сохранен: " + film));
+        return filmRepository.save(film).orElseThrow(() -> new EntitySaveException("Фильм не сохранен: " + film));
     }
 
     @Override
     public Film getFilm(long id) {
         log.info("Получение фильма по id: {}", id);
 
-        return filmRepository.get(id).orElseThrow(() -> new UnknownFilmException("Фильм не найден: " + id));
+        return filmRepository.findFilmById(id).orElseThrow(() -> new EntityNotFoundException("Фильм не найден: " + id));
     }
 
 
     @Override
     public Film updateFilm(Film film) {
         log.info("Обновление фильма {}", film);
-        return filmRepository.update(film).orElseThrow(() -> new UnknownFilmException("Фильм не найден: " + film));
+        return filmRepository.update(film).orElseThrow(() -> new EntityNotFoundException("Фильм не найден: " + film));
     }
 
     @Override
     @EventFeed(operation = EventOperation.ADD, type = EventType.LIKE)
     public boolean putLike(long id, long userId) {
-        filmRepository.get(id).orElseThrow(() ->
-                new UnknownFilmException("Фильм не найден: " + id));
-        userRepository.get(userId).orElseThrow(() ->
-                new UnknownUserException("Пользователь не найден: " + userId));
+        filmRepository.findFilmById(id).orElseThrow(() ->
+                new EntityNotFoundException("Фильм не найден: " + id));
+        userRepository.findUserById(userId).orElseThrow(() ->
+                new EntityNotFoundException("Пользователь не найден: " + userId));
         return filmRepository.putLike(id, userId);
 
     }
@@ -64,10 +63,10 @@ public class FilmServiceImpl implements FilmService {
     @Override
     @EventFeed(operation = EventOperation.REMOVE, type = EventType.LIKE)
     public boolean deleteLike(long id, long userId) {
-        filmRepository.get(id).orElseThrow(() ->
-                new UnknownFilmException("Фильм не найден: " + id));
-        userRepository.get(userId).orElseThrow(() ->
-                new UnknownUserException("Пользователь не найден: " + userId));
+        filmRepository.findFilmById(id).orElseThrow(() ->
+                new EntityNotFoundException("Фильм не найден: " + id));
+        userRepository.findUserById(userId).orElseThrow(() ->
+                new EntityNotFoundException("Пользователь не найден: " + userId));
         return filmRepository.deleteLike(id, userId);
     }
 
@@ -102,7 +101,7 @@ public class FilmServiceImpl implements FilmService {
     @Override
     public List<Film> getAllFilms() {
         log.info("Получение фильмов");
-        return filmRepository.getAll();
+        return filmRepository.findAll();
     }
 
     @Override
@@ -114,13 +113,17 @@ public class FilmServiceImpl implements FilmService {
     }
 
     @Override
-    public List<Film> search(String query, String by) {
-        return filmRepository.search(query, by);
+    public List<Film> getFilmsByFilter(String query, String by) {
+        return filmRepository.findFilmsByFilter(query, by);
     }
 
     @Override
     public List<Film> getFilmsByDirector(long directorId, String sortBy) {
         log.info("Получение всех фильмов от режиссера с id: {}. Дополнительное условие {}", directorId, sortBy);
-        return filmRepository.getFilmsByDirector(directorId, sortBy);
+        List<Film> filmList = filmRepository.findFilmsByDirector(directorId, sortBy);
+        if (filmList.size() == 0) {
+            throw new EntityNotFoundException("У режиссера с id: " + directorId + " нет фильмов");
+        }
+        return filmList;
     }
 }

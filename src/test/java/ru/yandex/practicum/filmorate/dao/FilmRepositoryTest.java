@@ -43,14 +43,14 @@ class FilmRepositoryTest {
     @Test
     @DisplayName("Должен вернуть список фильмов")
     void shouldReturnAllFilms() {
-        List<Film> films = filmRepository.getAll();
+        List<Film> films = filmRepository.findAll();
         assertThat(films).hasSize(3);
     }
 
     @Test
     @DisplayName("Должен вернуть фильм по id")
     void shouldReturnFilmById() {
-        Optional<Film> optionalFilm = filmRepository.get(1);
+        Optional<Film> optionalFilm = filmRepository.findFilmById(1);
         assertThat(optionalFilm)
                 .isPresent()
                 .hasValueSatisfying(film ->
@@ -60,7 +60,7 @@ class FilmRepositoryTest {
     @Test
     @DisplayName("Должен сохранить и вернуть фильм")
     void shouldSaveAndReturnFilm() {
-        long nextId = filmRepository.getAll().get(filmRepository.getAll().size() - 1).getId();
+        long nextId = filmRepository.findAll().get(filmRepository.findAll().size() - 1).getId();
         Optional<Film> optionalFilm = filmRepository.save(firstFilm);
         assertThat(optionalFilm)
                 .isPresent()

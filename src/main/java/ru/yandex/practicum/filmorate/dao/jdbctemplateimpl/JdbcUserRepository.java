@@ -1,8 +1,7 @@
 package ru.yandex.practicum.filmorate.dao.jdbctemplateimpl;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -23,25 +22,20 @@ import static ru.yandex.practicum.filmorate.utils.sqlscript.UsersSQL.*;
 
 
 @Repository
-@Primary
 @Slf4j
+@RequiredArgsConstructor
 public class JdbcUserRepository implements UserRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
-    @Autowired
-    public JdbcUserRepository(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
-
     @Override
-    public List<User> getAll() {
+    public List<User> findAll() {
         log.info("Получение списка всех пользователей");
         return jdbcTemplate.query(getAllUsers, this::extractData);
     }
 
     @Override
-    public Optional<User> get(long id) {
+    public Optional<User> findUserById(long id) {
         log.info("Получение пользователя с id: {}", id);
         return jdbcTemplate.query(getUserById, this::extractData, id).stream().findAny();
     }
@@ -96,13 +90,13 @@ public class JdbcUserRepository implements UserRepository {
     }
 
     @Override
-    public List<User> getMutualFriendsList(long id, long otherId) {
+    public List<User> findMutualFriendsList(long id, long otherId) {
         log.info("Получение списка пересекающихся друзей у {},{}", id, otherId);
         return jdbcTemplate.query(getMutualFriends, this::extractData, id, otherId);
     }
 
     @Override
-    public List<User> getFriendsList(long id) {
+    public List<User> findFriendsList(long id) {
         log.info("Получение списка друзей пользователя {}", id);
         return jdbcTemplate.query(getFriends, this::extractData, id);
     }
@@ -115,7 +109,7 @@ public class JdbcUserRepository implements UserRepository {
     }
 
     @Override
-    public Collection<Film> getRecommendations(long id) {
+    public Collection<Film> findRecommendationFilms(long id) {
         return jdbcTemplate.query(queryFilmsRecommendations, JdbcFilmRepository::extractFilmData, id, id);
     }
 

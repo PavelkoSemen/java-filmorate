@@ -8,7 +8,7 @@ import java.util.Optional;
 public interface EventRepository {
     Optional<Event> save(Event event);
 
-    Optional<Event> get(long id);
+    Optional<Event> findEventById(long id);
 
-    List<Event> getEventFeed(long userId);
+    List<Event> findAll(long userId);
 }

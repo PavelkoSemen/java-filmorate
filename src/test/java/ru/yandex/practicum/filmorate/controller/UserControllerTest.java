@@ -13,7 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import ru.yandex.practicum.filmorate.error.UnknownUserException;
+import ru.yandex.practicum.filmorate.error.EntityNotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.userservice.UserService;
 
@@ -106,7 +106,7 @@ class UserControllerTest {
     @DisplayName("Должен вернуть статус 404, при попытки обновить не существующего пользователя")
     public void shouldReturnNotFoundUpdateUser() throws Exception {
 
-        given(userService.updateUser(firstUser)).willThrow(new UnknownUserException());
+        given(userService.updateUser(firstUser)).willThrow(new EntityNotFoundException());
 
         mvc.perform(put("/users").contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(firstUser)))

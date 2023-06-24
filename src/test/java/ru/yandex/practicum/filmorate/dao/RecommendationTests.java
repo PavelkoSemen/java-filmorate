@@ -25,7 +25,7 @@ public class RecommendationTests {
         filmRepository.putLike(1, 1);
         filmRepository.putLike(2, 1);
         filmRepository.putLike(2, 2);
-        var films = userRepository.getRecommendations(2);
+        var films = userRepository.findRecommendationFilms(2);
         Assertions.assertEquals(1, films.size());
         Assertions.assertEquals(1, Objects.requireNonNull(films.stream().findFirst().orElse(null)).getId());
     }
@@ -36,7 +36,7 @@ public class RecommendationTests {
         filmRepository.putLike(2, 1);
         filmRepository.putLike(1, 2);
         filmRepository.putLike(2, 2);
-        var films = userRepository.getRecommendations(2);
+        var films = userRepository.findRecommendationFilms(2);
         Assertions.assertEquals(0, films.size());
     }
 }

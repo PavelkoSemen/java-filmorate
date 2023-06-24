@@ -66,7 +66,7 @@ public class FilmDirectorTest {
         filmRepository.putLike(film2.getId(), 2);
         filmRepository.putLike(film3.getId(), 1);
 
-        List<Film> filmList = new LinkedList<>(filmRepository.getFilmsByDirector(director2.getId(), "likes"));
+        List<Film> filmList = new LinkedList<>(filmRepository.findFilmsByDirector(director2.getId(), "likes"));
 
         assertThat(filmList)
                 .element(0)
@@ -82,7 +82,7 @@ public class FilmDirectorTest {
     @Test
     @DisplayName("Должен вернуть сортированный по годам список фильмов режиссера")
     void shouldReturnFilmDirectorsSortByYear() {
-        List<Film> filmList = new LinkedList<>(filmRepository.getFilmsByDirector(director2.getId(), "year"));
+        List<Film> filmList = new LinkedList<>(filmRepository.findFilmsByDirector(director2.getId(), "year"));
 
         assertThat(filmList)
                 .element(0)

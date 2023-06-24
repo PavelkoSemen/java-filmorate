@@ -1,7 +1,7 @@
 package ru.yandex.practicum.filmorate.dao.jdbctemplateimpl;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -16,8 +16,8 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-@Primary
 @Slf4j
+@RequiredArgsConstructor
 public class JdbcDirectorRepository implements DirectorRepository {
     private final JdbcTemplate jdbcTemplate;
     public static final String queryGetDirector = "SELECT * FROM directors WHERE director_id = ?";
@@ -26,11 +26,7 @@ public class JdbcDirectorRepository implements DirectorRepository {
     public static final String queryDeleteDirector = "DELETE FROM directors WHERE director_id = ?";
     public static final String queryGetAllDirectors = "SELECT * FROM directors";
 
-    public JdbcDirectorRepository(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
-
-    public Optional<Director> getDirector(long id) {
+    public Optional<Director> findDirectorById(long id) {
         log.info("Получение режиссера с id: {}", id);
         return jdbcTemplate.query(queryGetDirector, this::mapRow, id).stream().findAny();
     }
@@ -66,7 +62,7 @@ public class JdbcDirectorRepository implements DirectorRepository {
         jdbcTemplate.update(queryDeleteDirector, id);
     }
 
-    public List<Director> getAllDirectors() {
+    public List<Director> findAll() {
         log.info("Получение всех режиссеров");
         return jdbcTemplate.query(queryGetAllDirectors, this::mapRow);
     }

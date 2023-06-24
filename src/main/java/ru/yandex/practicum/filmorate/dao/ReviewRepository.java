@@ -6,9 +6,9 @@ import java.util.List;
 
 public interface ReviewRepository {
 
-    List<Review> getAll(Long filmId, Integer count);
+    List<Review> findAll(Long filmId, Integer count);
 
-    Review get(Long reviewId);
+    Review findReviewById(Long reviewId);
 
     Review save(Review review);
 

@@ -1,8 +1,7 @@
 package ru.yandex.practicum.filmorate.dao.jdbctemplateimpl;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.dao.MpaRepository;
@@ -14,26 +13,21 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-@Primary
 @Slf4j
+@RequiredArgsConstructor
 public class JdbcMpaRepository implements MpaRepository {
     private final String getMpaById = "SELECT * FROM mpa WHERE mpa_id = ?";
     private final String getAllMpa = "SELECT * FROM mpa";
     private final JdbcTemplate jdbcTemplate;
 
-    @Autowired
-    public JdbcMpaRepository(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
-
     @Override
-    public Optional<Mpa> get(long id) {
+    public Optional<Mpa> findMpaById(long id) {
         log.info("Возрастное ограничение с id: {}", id);
         return jdbcTemplate.query(getMpaById, this::mapRow, id).stream().findAny();
     }
 
     @Override
-    public List<Mpa> getAll() {
+    public List<Mpa> findAll() {
         log.info("Получение списка всех возрастных ограничений");
         return jdbcTemplate.query(getAllMpa, this::mapRow);
     }

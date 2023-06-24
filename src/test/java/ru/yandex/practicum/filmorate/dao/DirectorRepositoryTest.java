@@ -42,7 +42,7 @@ class DirectorRepositoryTest {
         directorRepository.createDirector(director1);
         long id = directorRepository.createDirector(director2).orElseThrow().getId();
         directorRepository.createDirector(director3);
-        assertEquals(director2, directorRepository.getDirector(id).orElseThrow());
+        assertEquals(director2, directorRepository.findDirectorById(id).orElseThrow());
     }
 
 
@@ -53,7 +53,7 @@ class DirectorRepositoryTest {
         long id = directorRepository.createDirector(director2).orElseThrow().getId();
         director2.setName("Новый режиссер 2");
         directorRepository.updateDirector(director2);
-        assertThat(directorRepository.getDirector(id)).isPresent().hasValueSatisfying(director ->
+        assertThat(directorRepository.findDirectorById(id)).isPresent().hasValueSatisfying(director ->
                 assertThat(director).hasFieldOrPropertyWithValue("name", "Новый режиссер 2"));
     }
 
@@ -63,7 +63,7 @@ class DirectorRepositoryTest {
         long id = directorRepository.createDirector(director1).orElseThrow().getId();
         directorRepository.createDirector(director2);
         directorRepository.deleteDirector(id);
-        assertEquals(Optional.empty(), directorRepository.getDirector(id));
+        assertEquals(Optional.empty(), directorRepository.findDirectorById(id));
     }
 
     @Test
@@ -72,7 +72,7 @@ class DirectorRepositoryTest {
         director1.setId(directorRepository.createDirector(director1).orElseThrow().getId());
         director2.setId(directorRepository.createDirector(director2).orElseThrow().getId());
         director3.setId(directorRepository.createDirector(director3).orElseThrow().getId());
-        List<Director> testDirectors = directorRepository.getAllDirectors();
+        List<Director> testDirectors = directorRepository.findAll();
         assertTrue(testDirectors.contains(director1));
         assertTrue(testDirectors.contains(director2));
         assertTrue(testDirectors.contains(director3));

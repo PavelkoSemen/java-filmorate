@@ -1,8 +1,7 @@
 package ru.yandex.practicum.filmorate.dao.jdbctemplateimpl;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
@@ -15,16 +14,11 @@ import java.util.List;
 
 
 @Repository
-@Primary
 @Slf4j
+@RequiredArgsConstructor
 public class JdbcReviewRepository implements ReviewRepository {
 
     private final JdbcTemplate jdbcTemplate;
-
-    @Autowired
-    public JdbcReviewRepository(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
 
     /*
         Вспомогательные методы класса репозитория
@@ -87,7 +81,7 @@ public class JdbcReviewRepository implements ReviewRepository {
     }
 
     @Override
-    public List<Review> getAll(Long filmId, Integer count) {
+    public List<Review> findAll(Long filmId, Integer count) {
 
         log.info("Получение списка всех отзывов");
 
@@ -104,7 +98,7 @@ public class JdbcReviewRepository implements ReviewRepository {
     }
 
     @Override
-    public Review get(Long reviewId) {
+    public Review findReviewById(Long reviewId) {
 
         log.info("Получение отзыва с id: {}", reviewId);
 

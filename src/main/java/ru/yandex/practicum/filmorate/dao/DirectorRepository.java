@@ -7,7 +7,7 @@ import java.util.Optional;
 
 public interface DirectorRepository {
 
-    Optional<Director> getDirector(long id);
+    Optional<Director> findDirectorById(long id);
 
     Optional<Director> createDirector(Director director);
 
@@ -15,5 +15,5 @@ public interface DirectorRepository {
 
     void deleteDirector(long id);
 
-    List<Director> getAllDirectors();
+    List<Director> findAll();
 }

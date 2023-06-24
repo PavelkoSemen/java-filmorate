@@ -1,7 +1,7 @@
 package ru.yandex.practicum.filmorate.dao.jdbctemplateimpl;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.dao.GenreRepository;
@@ -13,8 +13,8 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-@Primary
 @Slf4j
+@RequiredArgsConstructor
 public class JdbcGenreRepository implements GenreRepository {
 
     private final String getGenreById = "SELECT * FROM genres WHERE genre_id = ?";
@@ -22,18 +22,14 @@ public class JdbcGenreRepository implements GenreRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
-    public JdbcGenreRepository(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
-
     @Override
-    public Optional<Genre> get(long id) {
+    public Optional<Genre> findGenreById(long id) {
         log.info("Получение жанра с id: {}", id);
         return jdbcTemplate.query(getGenreById, this::mapRow, id).stream().findAny();
     }
 
     @Override
-    public List<Genre> getAll() {
+    public List<Genre> findAll() {
         log.info("Получение списка всех жанров");
         return jdbcTemplate.query(getAllGenres, this::mapRow);
     }

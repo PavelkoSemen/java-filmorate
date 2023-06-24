@@ -1,7 +1,7 @@
 package ru.yandex.practicum.filmorate.dao.jdbctemplateimpl;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -21,14 +21,10 @@ import static ru.yandex.practicum.filmorate.utils.sqlscript.EventSQL.*;
 
 @Repository
 @Slf4j
+@RequiredArgsConstructor
 public class JdbcEventRepository implements EventRepository {
 
     private final JdbcTemplate jdbcTemplate;
-
-    @Autowired
-    public JdbcEventRepository(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
 
     @Override
     public Optional<Event> save(Event event) {
@@ -54,13 +50,13 @@ public class JdbcEventRepository implements EventRepository {
     }
 
     @Override
-    public Optional<Event> get(long id) {
+    public Optional<Event> findEventById(long id) {
         log.info("Возвращаем событие с id: {}", id);
         return jdbcTemplate.query(getEventById, this::mapRow, id).stream().findAny();
     }
 
     @Override
-    public List<Event> getEventFeed(long userId) {
+    public List<Event> findAll(long userId) {
         log.info("Получение ленты событий");
         return jdbcTemplate.query(getEventsByUserId, this::mapRow, userId);
     }

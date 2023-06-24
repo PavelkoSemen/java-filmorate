@@ -37,14 +37,14 @@ class UserRepositoryTest {
     @Test
     @DisplayName("Должен вернуть список пользователей")
     void shouldReturnAllUsers() {
-        List<User> userList = userRepository.getAll();
+        List<User> userList = userRepository.findAll();
         assertThat(userList).hasSize(3);
     }
 
     @Test
     @DisplayName("Должен вернуть пустой Optional<User>")
     void shouldReturnEmptyOptional() {
-        Optional<User> userOptional = userRepository.get(4);
+        Optional<User> userOptional = userRepository.findUserById(4);
         assertThat(userOptional).isEmpty();
     }
 
@@ -57,7 +57,7 @@ class UserRepositoryTest {
                 .hasValueSatisfying(user ->
                         assertThat(user).hasFieldOrPropertyWithValue("id", 4L));
 
-        System.out.println(userRepository.getAll());
+        System.out.println(userRepository.findAll());
     }
 
     @Test
@@ -73,12 +73,12 @@ class UserRepositoryTest {
     @Test
     @DisplayName("Должен добавить друга")
     void shouldAddAFriend() {
-        List<User> oldUserList = userRepository.getFriendsList(1);
+        List<User> oldUserList = userRepository.findFriendsList(1);
         assertThat(oldUserList).hasSize(0);
 
         userRepository.insertFriend(1, 2);
 
-        List<User> newUserList = userRepository.getFriendsList(1);
+        List<User> newUserList = userRepository.findFriendsList(1);
         assertThat(newUserList)
                 .hasSize(1)
                 .element(0)
@@ -90,7 +90,7 @@ class UserRepositoryTest {
     void shouldDeletedAFriend() {
         userRepository.insertFriend(1, 2);
 
-        List<User> oldUserList = userRepository.getFriendsList(1);
+        List<User> oldUserList = userRepository.findFriendsList(1);
         assertThat(oldUserList)
                 .hasSize(1)
                 .element(0)
@@ -98,7 +98,7 @@ class UserRepositoryTest {
 
         userRepository.deleteFriend(1, 2);
 
-        List<User> newUserList = userRepository.getFriendsList(1);
+        List<User> newUserList = userRepository.findFriendsList(1);
         assertThat(newUserList)
                 .hasSize(0);
     }
@@ -109,7 +109,7 @@ class UserRepositoryTest {
         userRepository.insertFriend(1, 2);
         userRepository.insertFriend(3, 2);
 
-        List<User> users = userRepository.getMutualFriendsList(1, 3);
+        List<User> users = userRepository.findMutualFriendsList(1, 3);
         assertThat(users).hasSize(1)
                 .element(0)
                 .hasFieldOrPropertyWithValue("id", 2L);
@@ -120,7 +120,7 @@ class UserRepositoryTest {
     void shouldReturnFriendsList() {
         userRepository.insertFriend(1, 2);
 
-        List<User> oldUserList = userRepository.getFriendsList(1);
+        List<User> oldUserList = userRepository.findFriendsList(1);
         assertThat(oldUserList)
                 .hasSize(1)
                 .element(0)

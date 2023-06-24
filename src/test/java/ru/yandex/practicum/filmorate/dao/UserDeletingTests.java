@@ -63,14 +63,14 @@ class UserDeletingTests {
     @Test
     void testFindUserById() {
         createUser();
-        var user = userStorage.get(offset + 1);
+        var user = userStorage.findUserById(offset + 1);
         checkUser(user);
     }
 
     @Test
     void testFindUser1ById() {
         createUser1();
-        var user = userStorage.get(offset + 1);
+        var user = userStorage.findUserById(offset + 1);
         checkUser1(user);
     }
 
@@ -78,7 +78,7 @@ class UserDeletingTests {
     void testGetUsers() {
         createUser();
         createUser1();
-        var users = userStorage.getAll();
+        var users = userStorage.findAll();
         Assertions.assertEquals(offset + 2, users.size());
         checkUser(users.stream().skip(offset).findFirst());
         checkUser1(users.stream().skip(offset + 1).findFirst());
@@ -87,9 +87,9 @@ class UserDeletingTests {
     @Test
     void testDeleteFilm() {
         createUser();
-        var user = userStorage.get(1 + offset);
+        var user = userStorage.findUserById(1 + offset);
         userStorage.delete(user.orElse(null));
-        var films = userStorage.getAll();
+        var films = userStorage.findAll();
         Assertions.assertEquals(offset, films.size());
     }
 
@@ -97,9 +97,9 @@ class UserDeletingTests {
     void testAdd2UsersDelete1User() {
         createUser();
         createUser1();
-        var user = userStorage.get(1 + offset);
+        var user = userStorage.findUserById(1 + offset);
         userStorage.delete(user.orElse(null));
-        var films = userStorage.getAll();
+        var films = userStorage.findAll();
         checkUser1(films.stream().skip(offset).findFirst());
     }
 
@@ -107,14 +107,14 @@ class UserDeletingTests {
     void testAddGetFriends() {
         createUser();
         createUser1();
-        var user = userStorage.get(1 + offset);
-        var user1 = userStorage.get(2 + offset);
+        var user = userStorage.findUserById(1 + offset);
+        var user1 = userStorage.findUserById(2 + offset);
         userStorage.insertFriend(user.get().getId(), user1.get().getId());
-        var friends = userStorage.getFriendsList(user.get().getId());
+        var friends = userStorage.findFriendsList(user.get().getId());
         Assertions.assertEquals(1, friends.size());
         checkUser1(friends.stream().findFirst());
         userStorage.delete(user1.orElse(null));
-        var friendsAfterDeleting = userStorage.getFriendsList(user.get().getId());
+        var friendsAfterDeleting = userStorage.findFriendsList(user.get().getId());
         Assertions.assertEquals(0, friendsAfterDeleting.size());
     }
 }

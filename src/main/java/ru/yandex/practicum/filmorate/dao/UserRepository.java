@@ -8,9 +8,9 @@ import java.util.List;
 import java.util.Optional;
 
 public interface UserRepository {
-    List<User> getAll();
+    List<User> findAll();
 
-    Optional<User> get(long id);
+    Optional<User> findUserById(long id);
 
     Optional<User> save(User t);
 
@@ -20,11 +20,11 @@ public interface UserRepository {
 
     boolean deleteFriend(long userId, long friendId);
 
-    List<User> getMutualFriendsList(long id, long otherId);
+    List<User> findMutualFriendsList(long id, long otherId);
 
-    List<User> getFriendsList(long id);
+    List<User> findFriendsList(long id);
 
     void delete(User t);
 
-    Collection<Film> getRecommendations(long id);
+    Collection<Film> findRecommendationFilms(long id);
 }
