@@ -8,8 +8,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import ru.yandex.practicum.filmorate.dao.UserRepository;
-import ru.yandex.practicum.filmorate.error.SaveUserException;
-import ru.yandex.practicum.filmorate.error.UnknownUserException;
+import ru.yandex.practicum.filmorate.error.EntityNotFoundException;
+import ru.yandex.practicum.filmorate.error.EntitySaveException;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.time.LocalDate;
@@ -80,7 +80,7 @@ class UserServiceTest {
     public void shouldThrowAnExceptionWhenSavingAMovie() {
         given(userRepository.save(firstUser)).willReturn(Optional.empty());
 
-        assertThrows(SaveUserException.class,
+        assertThrows(EntitySaveException.class,
                 () -> userService.createUser(firstUser));
 
         verify(userRepository, times(1)).save(firstUser);
@@ -104,7 +104,7 @@ class UserServiceTest {
     public void shouldThrowAnExceptionWhenUpdatingAMovie() {
         given(userRepository.update(firstUser)).willReturn(Optional.empty());
 
-        assertThrows(UnknownUserException.class,
+        assertThrows(EntityNotFoundException.class,
                 () -> userService.updateUser(firstUser));
 
         verify(userRepository, times(1)).update(firstUser);
@@ -115,10 +115,10 @@ class UserServiceTest {
     public void shouldReturnAListOfMovies() {
         List<User> userList = List.of(firstUser, secondUser);
 
-        given(userRepository.getAll()).willReturn(userList);
+        given(userRepository.findAll()).willReturn(userList);
 
         assertEquals(userList, userService.getAllUsers());
 
-        verify(userRepository, times(1)).getAll();
+        verify(userRepository, times(1)).findAll();
     }
 }

@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface MpaRepository {
-    Optional<Mpa> get(long id);
+    Optional<Mpa> findMpaById(long id);
 
-    List<Mpa> getAll();
+    List<Mpa> findAll();
 }

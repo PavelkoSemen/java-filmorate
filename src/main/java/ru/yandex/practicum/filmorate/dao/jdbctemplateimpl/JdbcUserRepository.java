@@ -1,45 +1,41 @@
 package ru.yandex.practicum.filmorate.dao.jdbctemplateimpl;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.dao.UserRepository;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
-import static ru.yandex.practicum.filmorate.utils.UsersSQL.*;
+import static ru.yandex.practicum.filmorate.utils.sqlscript.UsersSQL.*;
 
 
 @Repository
-@Primary
 @Slf4j
+@RequiredArgsConstructor
 public class JdbcUserRepository implements UserRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
-    @Autowired
-    public JdbcUserRepository(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
-
     @Override
-    public List<User> getAll() {
+    public List<User> findAll() {
         log.info("Получение списка всех пользователей");
         return jdbcTemplate.query(getAllUsers, this::extractData);
     }
 
     @Override
-    public Optional<User> get(long id) {
+    public Optional<User> findUserById(long id) {
         log.info("Получение пользователя с id: {}", id);
         return jdbcTemplate.query(getUserById, this::extractData, id).stream().findAny();
     }
@@ -80,27 +76,27 @@ public class JdbcUserRepository implements UserRepository {
     }
 
     @Override
-    public void insertFriend(long userId, long friendId) {
+    public boolean insertFriend(long userId, long friendId) {
         log.info("Добавление пользователю {} друга {}", userId, friendId);
+        int countRows = jdbcTemplate.update(deleteFriends, userId, friendId);
         jdbcTemplate.update(insertIntoFriends, userId, friendId);
-        log.info("Друг {} добавлен пользователю {}", userId, friendId);
+        return countRows == 0;
     }
 
     @Override
-    public void deleteFriend(long userId, long friendId) {
+    public boolean deleteFriend(long userId, long friendId) {
         log.info("Удаление у пользователя {} друга {}", userId, friendId);
-        jdbcTemplate.update(deleteFriends, userId, friendId);
-        log.info("Друг {} удален у пользователя {}", userId, friendId);
+        return jdbcTemplate.update(deleteFriends, userId, friendId) > 0;
     }
 
     @Override
-    public List<User> getMutualFriendsList(long id, long otherId) {
+    public List<User> findMutualFriendsList(long id, long otherId) {
         log.info("Получение списка пересекающихся друзей у {},{}", id, otherId);
         return jdbcTemplate.query(getMutualFriends, this::extractData, id, otherId);
     }
 
     @Override
-    public List<User> getFriendsList(long id) {
+    public List<User> findFriendsList(long id) {
         log.info("Получение списка друзей пользователя {}", id);
         return jdbcTemplate.query(getFriends, this::extractData, id);
     }
@@ -110,6 +106,11 @@ public class JdbcUserRepository implements UserRepository {
         log.info("Удаление пользователя: {}", user);
         jdbcTemplate.update(deleteUser, user.getId());
         log.info("Пользователь {} удален", user);
+    }
+
+    @Override
+    public Collection<Film> findRecommendationFilms(long id) {
+        return jdbcTemplate.query(queryFilmsRecommendations, JdbcFilmRepository::extractFilmData, id, id);
     }
 
     private User extractData(ResultSet rs, int rowNum) throws SQLException {

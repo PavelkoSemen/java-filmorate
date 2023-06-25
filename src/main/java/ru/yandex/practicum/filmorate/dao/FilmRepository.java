@@ -6,19 +6,27 @@ import java.util.List;
 import java.util.Optional;
 
 public interface FilmRepository {
-    List<Film> getAll();
+    List<Film> findAll();
 
-    Optional<Film> get(long id);
+    Optional<Film> findFilmById(long id);
 
     Optional<Film> save(Film t);
 
     Optional<Film> update(Film t);
 
-    void putLike(long filmId, long userId);
+    boolean putLike(long filmId, long userId);
 
-    void deleteLike(long filmId, long userId);
+    boolean deleteLike(long filmId, long userId);
 
-    List<Film> findTopFilms(int countFilms);
+    List<Film> findTopFilms();
+
+    List<Film> findTopFilmsWithLimit(int countFilms);
+
+    List<Film> findTopFilmsByUserId(long userId);
+
+    List<Film> findFilmsByDirector(long directorId, String sortBy);
 
     void delete(Film t);
+
+    List<Film> findFilmsByFilter(String query, String by);
 }

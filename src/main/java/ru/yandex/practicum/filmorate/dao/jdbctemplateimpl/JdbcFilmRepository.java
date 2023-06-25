@@ -1,14 +1,14 @@
 package ru.yandex.practicum.filmorate.dao.jdbctemplateimpl;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.dao.FilmRepository;
+import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
@@ -17,35 +17,50 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
-import static ru.yandex.practicum.filmorate.utils.FilmsSQL.*;
+import static ru.yandex.practicum.filmorate.utils.sqlscript.FilmsSQL.*;
 
 @Repository
-@Primary
 @Slf4j
+@RequiredArgsConstructor
 public class JdbcFilmRepository implements FilmRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
-    @Autowired
-    public JdbcFilmRepository(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
-
     @Override
-    public List<Film> getAll() {
+    public List<Film> findAll() {
         log.info("Получение списка всех фильмов");
         return jdbcTemplate.query(getAllFilms, this::extractData);
     }
 
     @Override
-    public Optional<Film> get(long id) {
+    public Optional<Film> findFilmById(long id) {
         log.info("Получение фильма с id: {}", id);
         return jdbcTemplate.query(getFilmById, this::extractData, id).stream().findAny();
+    }
+
+    @Override
+    public List<Film> findFilmsByFilter(String query, String by) {
+        List<String> splitBy = Arrays.asList(by.split(","));
+        String concatQuery = "";
+
+        for (String s : splitBy) {
+            String andOrOr = concatQuery.length() == 0 ? " AND " : " OR ";
+            switch (s) {
+                case "title":
+                    concatQuery = concatQuery + andOrOr + " LOWER(f.name) LIKE '%" + query.toLowerCase() + "%'";
+                    break;
+                case "director":
+                    concatQuery = concatQuery + andOrOr + " LOWER(d.director_name) LIKE '%" + query.toLowerCase() + "%'";
+                    break;
+
+            }
+        }
+
+        String resultQuery = queryMainSearch + concatQuery + " ORDER BY f.film_id DESC";
+        return jdbcTemplate.query(resultQuery, this::extractData);
     }
 
     @Override
@@ -64,6 +79,7 @@ public class JdbcFilmRepository implements FilmRepository {
 
         film.setId(keyHolder.getKey().longValue());
         insertGenres(film);
+        insertDirectors(film);
         log.info("Фильма {} сохранен", film);
         return Optional.of(film);
     }
@@ -80,8 +96,10 @@ public class JdbcFilmRepository implements FilmRepository {
                 film.getId());
 
         jdbcTemplate.update(deleteFilmGenre, film.getId());
+        jdbcTemplate.update(deleteFilmDirector, film.getId());
 
         insertGenres(film);
+        insertDirectors(film);
 
         if (countRows > 0) {
             log.info("Фильма {} обновлен", film);
@@ -91,23 +109,54 @@ public class JdbcFilmRepository implements FilmRepository {
     }
 
     @Override
-    public void putLike(long filmId, long userId) {
+    public boolean putLike(long filmId, long userId) {
         log.info("Добавить фильму {} лайк, от пользователя {}", filmId, userId);
+        int countRows = jdbcTemplate.update(deleteLikes, filmId, userId);
         jdbcTemplate.update(insertIntoLikes, filmId, userId);
-        log.info("Добавлен лайк фильму {} , от пользователя {}", filmId, userId);
+        return countRows == 0;
     }
 
     @Override
-    public void deleteLike(long filmId, long userId) {
+    public boolean deleteLike(long filmId, long userId) {
         log.info("Удалить у фильма {} лайк, от пользователя {}", filmId, userId);
-        jdbcTemplate.update(deleteLikes, filmId, userId);
-        log.info("Удален лайк у фильма {} , от пользователя {}", filmId, userId);
+        return jdbcTemplate.update(deleteLikes, filmId, userId) > 0;
     }
 
     @Override
-    public List<Film> findTopFilms(int countFilms) {
+    public List<Film> findTopFilmsWithLimit(int countFilms) {
         log.info("Вернуть топ {} фильмов", countFilms);
-        return jdbcTemplate.query(getTopFilms, this::extractData, countFilms);
+        return jdbcTemplate.query(getTopFilmsWithLimit, this::extractData, countFilms);
+    }
+
+    @Override
+    public List<Film> findTopFilms() {
+        log.info("Вернуть топ фильмов");
+        return jdbcTemplate.query(getTopFilms, this::extractData);
+    }
+
+    @Override
+    public List<Film> findTopFilmsByUserId(long userId) {
+        log.info("Вернуть топ фильмов для пользователя {}", userId);
+        return jdbcTemplate.query(getTopFilmsByUserId, this::extractData, userId);
+    }
+
+    public List<Film> findFilmsByDirector(long directorId, String sortBy) {
+        log.info("Вернуть фильмы режиссера с id {}. Дополнительное условие {}", directorId, sortBy);
+        List<Film> list;
+        switch (sortBy) {
+            case ("likes"):
+                list = new LinkedList<>(Objects.requireNonNull(jdbcTemplate
+                        .query(queryGetFilmsByDirectorLikeSort, this::extractData, directorId)));
+                break;
+            case ("year"):
+                list = new LinkedList<>(Objects.requireNonNull(jdbcTemplate
+                        .query(queryGetFilmsByDirectorYearSort, this::extractData, directorId)));
+                break;
+            default:
+                list = new LinkedList<>(Objects.requireNonNull(jdbcTemplate
+                        .query(queryGetFilmsByDirectorWithoutSort, this::extractData, directorId)));
+        }
+        return list;
     }
 
     @Override
@@ -121,23 +170,38 @@ public class JdbcFilmRepository implements FilmRepository {
         List<Long> genresId = film.getGenres().stream()
                 .map(Genre::getId)
                 .collect(Collectors.toList());
-        if (!genresId.isEmpty()) {
-            jdbcTemplate.batchUpdate(insertIntoFilmGenre, new BatchPreparedStatementSetter() {
+        batchInsertFilmParameters(film, genresId, insertIntoFilmGenre);
+    }
+
+    private void insertDirectors(Film film) {
+        List<Long> directorsId = film.getDirectors().stream()
+                .map(Director::getId)
+                .collect(Collectors.toList());
+        batchInsertFilmParameters(film, directorsId, insertIntoFilmDirector);
+    }
+
+    private void batchInsertFilmParameters(Film film, List<Long> parameterId, String insertIntoFilmParameter) {
+        if (!parameterId.isEmpty()) {
+            jdbcTemplate.batchUpdate(insertIntoFilmParameter, new BatchPreparedStatementSetter() {
                 @Override
                 public void setValues(PreparedStatement ps, int i) throws SQLException {
                     ps.setLong(1, film.getId());
-                    ps.setLong(2, genresId.get(i));
+                    ps.setLong(2, parameterId.get(i));
                 }
 
                 @Override
                 public int getBatchSize() {
-                    return genresId.size();
+                    return parameterId.size();
                 }
             });
         }
     }
 
     private List<Film> extractData(ResultSet rs) throws SQLException {
+        return extractFilmData(rs);
+    }
+
+    public static List<Film> extractFilmData(ResultSet rs) throws SQLException {
         List<Film> list = new ArrayList<>();
         Film currentFilm = new Film();
         long previousId = 0;
@@ -150,12 +214,14 @@ public class JdbcFilmRepository implements FilmRepository {
             if (rs.getLong("GENRE_ID") != 0) {
                 currentFilm.addGenre(mapRowGenre(rs));
             }
+            if (rs.getLong("DIRECTOR_ID") != 0) {
+                currentFilm.addDirector(mapRowDirector(rs));
+            }
         }
-
         return list;
     }
 
-    private Genre mapRowGenre(ResultSet rs) throws SQLException {
+    private static Genre mapRowGenre(ResultSet rs) throws SQLException {
         log.info("Заполнение жанров");
         Genre genre = new Genre();
         genre.setId(rs.getLong("GENRE_ID"));
@@ -163,7 +229,15 @@ public class JdbcFilmRepository implements FilmRepository {
         return genre;
     }
 
-    private Film mapRowFilms(ResultSet rs) throws SQLException {
+    private static Director mapRowDirector(ResultSet rs) throws SQLException {
+        log.info("Заполнение режиссеров");
+        Director director = new Director();
+        director.setId(rs.getLong("DIRECTOR_ID"));
+        director.setName(rs.getString("DIRECTOR_NAME"));
+        return director;
+    }
+
+    private static Film mapRowFilms(ResultSet rs) throws SQLException {
         log.info("Заполнение фильма");
         Film film = new Film();
         film.setId(rs.getLong("FILM_ID"));
@@ -178,5 +252,4 @@ public class JdbcFilmRepository implements FilmRepository {
         film.setMpa(mpa);
         return film;
     }
-
 }

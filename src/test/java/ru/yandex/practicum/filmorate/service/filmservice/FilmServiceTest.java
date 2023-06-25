@@ -8,8 +8,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import ru.yandex.practicum.filmorate.dao.FilmRepository;
-import ru.yandex.practicum.filmorate.error.SaveFilmException;
-import ru.yandex.practicum.filmorate.error.UnknownFilmException;
+import ru.yandex.practicum.filmorate.error.EntityNotFoundException;
+import ru.yandex.practicum.filmorate.error.EntitySaveException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Mpa;
 
@@ -17,8 +17,8 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -73,7 +73,7 @@ class FilmServiceTest {
     public void shouldThrowAnExceptionWhenSavingAMovie() {
         given(filmRepository.save(firstFilm)).willReturn(Optional.empty());
 
-        assertThrows(SaveFilmException.class,
+        assertThrows(EntitySaveException.class,
                 () -> filmService.createFilm(firstFilm));
 
         verify(filmRepository, times(1)).save(firstFilm);
@@ -97,7 +97,7 @@ class FilmServiceTest {
     public void shouldThrowAnExceptionWhenUpdatingAMovie() {
         given(filmRepository.update(firstFilm)).willReturn(Optional.empty());
 
-        assertThrows(UnknownFilmException.class,
+        assertThrows(EntityNotFoundException.class,
                 () -> filmService.updateFilm(firstFilm));
 
         verify(filmRepository, times(1)).update(firstFilm);
@@ -108,10 +108,27 @@ class FilmServiceTest {
     public void shouldReturnAListOfMovies() {
         List<Film> filmList = List.of(firstFilm, secondFilm);
 
-        given(filmRepository.getAll()).willReturn(filmList);
+        given(filmRepository.findAll()).willReturn(filmList);
 
         assertEquals(filmList, filmService.getAllFilms());
 
-        verify(filmRepository, times(1)).getAll();
+        verify(filmRepository, times(1)).findAll();
+    }
+
+    @DisplayName("Должен вернуть список общих фильмов")
+    @Test
+    public void shouldReturnMutualTopFilms() {
+        List<Film> firstFilmsList = List.of(firstFilm, secondFilm);
+        List<Film> secondFilmsList = List.of(secondFilm);
+
+        given(filmRepository.findTopFilmsByUserId(1)).willReturn(firstFilmsList);
+        given(filmRepository.findTopFilmsByUserId(2)).willReturn(secondFilmsList);
+
+        List<Film> currentList = filmService.getMutualTopFilms(1, 2);
+
+        assertTrue(currentList.contains(secondFilm));
+        assertEquals(1, currentList.size());
+
+        verify(filmRepository, times(2)).findTopFilmsByUserId(any(Long.class));
     }
 }

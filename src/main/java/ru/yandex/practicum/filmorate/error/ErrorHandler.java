@@ -13,9 +13,9 @@ import java.util.Date;
 @RestControllerAdvice
 @Slf4j
 public class ErrorHandler {
-    @ExceptionHandler(SaveUserException.class)
+    @ExceptionHandler(EntitySaveException.class)
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
-    public ErrorMessage saveUserException(SaveUserException ex, WebRequest request) {
+    public ErrorMessage saveEntityException(EntitySaveException ex, WebRequest request) {
         log.error(ex.getMessage());
         return new ErrorMessage(
                 HttpStatus.BAD_REQUEST.value(),
@@ -24,53 +24,9 @@ public class ErrorHandler {
                 request.getDescription(false));
     }
 
-    @ExceptionHandler(SaveFilmException.class)
-    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
-    public ErrorMessage saveFilmException(SaveFilmException ex, WebRequest request) {
-        log.error(ex.getMessage());
-        return new ErrorMessage(
-                HttpStatus.BAD_REQUEST.value(),
-                new Date(),
-                ex.getMessage(),
-                request.getDescription(false));
-    }
-
-    @ExceptionHandler(UnknownUserException.class)
+    @ExceptionHandler(EntityNotFoundException.class)
     @ResponseStatus(value = HttpStatus.NOT_FOUND)
-    public ErrorMessage unknownUserException(UnknownUserException ex, WebRequest request) {
-        log.error(ex.getMessage());
-        return new ErrorMessage(
-                HttpStatus.NOT_FOUND.value(),
-                new Date(),
-                ex.getMessage(),
-                request.getDescription(false));
-    }
-
-    @ExceptionHandler(UnknownFilmException.class)
-    @ResponseStatus(value = HttpStatus.NOT_FOUND)
-    public ErrorMessage unknownFilmException(UnknownFilmException ex, WebRequest request) {
-        log.error(ex.getMessage());
-        return new ErrorMessage(
-                HttpStatus.NOT_FOUND.value(),
-                new Date(),
-                ex.getMessage(),
-                request.getDescription(false));
-    }
-
-    @ExceptionHandler(UnknownGenreException.class)
-    @ResponseStatus(value = HttpStatus.NOT_FOUND)
-    public ErrorMessage unknownGenreException(UnknownGenreException ex, WebRequest request) {
-        log.error(ex.getMessage());
-        return new ErrorMessage(
-                HttpStatus.NOT_FOUND.value(),
-                new Date(),
-                ex.getMessage(),
-                request.getDescription(false));
-    }
-
-    @ExceptionHandler(UnknownMpaException.class)
-    @ResponseStatus(value = HttpStatus.NOT_FOUND)
-    public ErrorMessage unknownMpaException(UnknownMpaException ex, WebRequest request) {
+    public ErrorMessage unknownEntityException(EntityNotFoundException ex, WebRequest request) {
         log.error(ex.getMessage());
         return new ErrorMessage(
                 HttpStatus.NOT_FOUND.value(),

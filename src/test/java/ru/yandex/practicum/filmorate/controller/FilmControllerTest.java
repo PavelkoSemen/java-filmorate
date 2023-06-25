@@ -13,7 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import ru.yandex.practicum.filmorate.error.UnknownFilmException;
+import ru.yandex.practicum.filmorate.error.EntityNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.service.filmservice.FilmService;
@@ -115,7 +115,7 @@ class FilmControllerTest {
     @DisplayName("Должен вернуть статус 404, при попытки обновить не существующий фильм")
     public void shouldReturnNotFoundUpdateFilm() throws Exception {
 
-        given(service.updateFilm(firstFilm)).willThrow(new UnknownFilmException());
+        given(service.updateFilm(firstFilm)).willThrow(new EntityNotFoundException());
 
         mvc.perform(put("/films").contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(firstFilm)))

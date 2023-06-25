@@ -43,14 +43,14 @@ class FilmRepositoryTest {
     @Test
     @DisplayName("Должен вернуть список фильмов")
     void shouldReturnAllFilms() {
-        List<Film> films = filmRepository.getAll();
+        List<Film> films = filmRepository.findAll();
         assertThat(films).hasSize(3);
     }
 
     @Test
     @DisplayName("Должен вернуть фильм по id")
     void shouldReturnFilmById() {
-        Optional<Film> optionalFilm = filmRepository.get(1);
+        Optional<Film> optionalFilm = filmRepository.findFilmById(1);
         assertThat(optionalFilm)
                 .isPresent()
                 .hasValueSatisfying(film ->
@@ -60,11 +60,12 @@ class FilmRepositoryTest {
     @Test
     @DisplayName("Должен сохранить и вернуть фильм")
     void shouldSaveAndReturnFilm() {
+        long nextId = filmRepository.findAll().get(filmRepository.findAll().size() - 1).getId();
         Optional<Film> optionalFilm = filmRepository.save(firstFilm);
         assertThat(optionalFilm)
                 .isPresent()
                 .hasValueSatisfying(film ->
-                        assertThat(film).hasFieldOrPropertyWithValue("id", 4L));
+                        assertThat(film).hasFieldOrPropertyWithValue("id", nextId + 1L));
     }
 
     @Test
@@ -83,8 +84,8 @@ class FilmRepositoryTest {
     @DisplayName("Должен добавить лайк фильму")
     void shouldPutLike() {
         filmRepository.putLike(1, 1);
-        List<Film> newTopFilms = filmRepository.findTopFilms(1);
-        assertThat(newTopFilms).hasSize(1)
+        List<Film> newTopFilms = filmRepository.findTopFilms();
+        assertThat(newTopFilms)
                 .element(0)
                 .hasFieldOrPropertyWithValue("id", 1L);
     }
@@ -93,16 +94,16 @@ class FilmRepositoryTest {
     @DisplayName("Должен удалить лайк у фильма")
     void shouldDeleteLike() {
         filmRepository.putLike(1, 1);
-        List<Film> oldTopFilms = filmRepository.findTopFilms(1);
-        assertThat(oldTopFilms).hasSize(1)
+        List<Film> oldTopFilms = filmRepository.findTopFilms();
+        assertThat(oldTopFilms)
                 .element(0)
                 .hasFieldOrPropertyWithValue("id", 1L);
 
         filmRepository.deleteLike(1, 1);
         filmRepository.putLike(2, 1);
 
-        List<Film> newTopFilms = filmRepository.findTopFilms(1);
-        assertThat(newTopFilms).hasSize(1)
+        List<Film> newTopFilms = filmRepository.findTopFilms();
+        assertThat(newTopFilms)
                 .element(0)
                 .hasFieldOrPropertyWithValue("id", 2L);
     }
@@ -111,17 +112,38 @@ class FilmRepositoryTest {
     @DisplayName("Должен вернуть топ фильмов")
     void shouldReturnTopFilms() {
         filmRepository.putLike(1, 1);
-        List<Film> topFilms = filmRepository.findTopFilms(1);
-        assertThat(topFilms).hasSize(1)
+        List<Film> topFilms = filmRepository.findTopFilms();
+        assertThat(topFilms)
                 .element(0)
                 .hasFieldOrPropertyWithValue("id", 1L);
 
         filmRepository.putLike(2, 1);
         filmRepository.putLike(2, 2);
 
-        List<Film> topFilmsSecond = filmRepository.findTopFilms(1);
-        assertThat(topFilmsSecond).hasSize(1)
+        List<Film> topFilmsSecond = filmRepository.findTopFilms();
+        assertThat(topFilmsSecond)
                 .element(0)
                 .hasFieldOrPropertyWithValue("id", 2L);
+    }
+
+    @Test
+    @DisplayName("Должен вернуть список фильмов у пользователя")
+    void shouldReturnTopFilmsByUser() {
+        filmRepository.putLike(1, 1);
+        filmRepository.putLike(2, 1);
+
+        List<Film> topFilmsSecond = filmRepository.findTopFilmsByUserId(1);
+        assertThat(topFilmsSecond)
+                .hasSize(2);
+    }
+
+    @Test
+    @DisplayName("Должен вернуть пустой список фильмов у пользователя")
+    void shouldReturnEmptyTopFilmsByUser() {
+        filmRepository.putLike(1, 1);
+        filmRepository.putLike(2, 1);
+
+        List<Film> topFilmsSecond = filmRepository.findTopFilmsByUserId(2);
+        assertThat(topFilmsSecond).isEmpty();
     }
 }
